@@ -28,7 +28,7 @@ $Form.Icon = $Icon
 # Var init
 . .\passtest.ps1
 
-##C:\Scripts\Initialize-PowerCLIEnvironment.ps1
+##C:\Scripts\VMware-GUI-Native-Linux-Cloner\Initialize-PowerCLIEnvironment.ps1
 
 $global:agentInstaller = ""
 [bool]$global:vmop = $false
@@ -622,7 +622,7 @@ $Form.Controls.Add($file_Button)
 $file_Button.Add_Click({
     Write-Host -ForeGroundColor Green "[INFO] Selecting Horizon Agent tarball..."
     $outputBox.AppendText("[INFO] Selecting Horizon Agent tar ball...`r`n")
-    $global:agentInstaller = Read-OpenFileDialog -WindowTitle "Select the Horizon Agent tar ball File" -InitialDirectory 'C:\scripts' -Filter "Tar files (*.tar)|*.tar*"
+    $global:agentInstaller = Read-OpenFileDialog -WindowTitle "Select the Horizon Agent tar ball File" -InitialDirectory 'C:\scripts\Horizon_tarballs' -Filter "Tar files (*.tar)|*.tar*"
     if (![string]::IsNullOrEmpty($global:agentInstaller)) 
     { 
         Write-Host -ForeGroundColor Green "[INFO] You selected the Horizon agent tar ball: $global:agentInstaller." 
@@ -1106,7 +1106,7 @@ function main {
 
     # Logging the deployment
     $logDateTime = date -Format dd_MM_yy
-    $global:Logfile = "C:\scripts\" + $Par_VMName_InputBox.text + $logDateTime + ".log"
+    $global:Logfile = "C:\scripts\logs\" + $Par_VMName_InputBox.text + $logDateTime + ".log"
     Write-Host -ForeGroundColor Green "[INFO] Log file is: $global:Logfile `n"
     $timedate = date -Format dd/MM/yy`thh:mm:ss.m
     LogWrite "##############################################################################`n"
@@ -1161,10 +1161,6 @@ function main {
     while ($i -le $deploymentloop)
     {
         $destVMName = $Org_VMName + "-" + $i.ToString("00")
-        # Nothing goes before this
-        #$input=$InputBox.text;                                                             
-        #$pingResult=ls "C:\Users\alibi\Documents\" | fl | out-string;
-
 
         $j=$j+1
         $VMName = $destVMName
@@ -1173,8 +1169,7 @@ function main {
         $outputBox.AppendText("`r`n############ Clone Nbr: $j   On: $VMName     ##########`r`n")
         $time = date -Format dd/MM/yy`thh:mm:ss.m
         LogWrite "[INFO] $time- Cloning the VM: $VMName started.`n"
-        
-        
+
 	    if (IsVMExists ($destVMName))
 	    {
 		    Write-Host -ForeGroundColor Yellow "[DEBUG] VM $destVMName already Exists in VC $vcAddress"
@@ -1265,8 +1260,6 @@ function main {
             $deploymentloop = $lastgoodi
             continue
             #break
-            
-
         }
 
         #$destHost = $Hosting
@@ -1403,10 +1396,6 @@ function main {
     while ($i -le $deploymentloop)
     {
         $destVMName = $Org_VMName + "-" + $i.ToString("00")
-        # Nothing goes before this
-        #$input=$InputBox.text;                                                             
-        #$pingResult=ls "C:\Users\alibi\Documents\" | fl | out-string;
-        
 
         $j=$j+1
         $VMName = $destVMName
@@ -1416,7 +1405,6 @@ function main {
         $outputBox.AppendText("`r`n############ Configure: $j #### VM: $VMName     ##########`r`n")
         $time = date -Format dd/MM/yy`thh:mm:ss.m
         LogWrite "[INFO] $time- Configuring the VM: $VMName started.`n"
-
 
         $Ipchecker = $newvm.Guest.IPAddress.Count.ToString()
         $timerout = 0
@@ -1549,7 +1537,7 @@ function main {
     $time = date -Format dd/MM/yy`thh:mm:ss.m
     LogWrite "[INFO] $time- Gathering IP addresses... `n"
  
-    $VMIPaddress = "\\penelopeprime.courses.ebi.ac.uk\shared\Scripts\" + $VMfile +"_IP_Address.csv"
+    $VMIPaddress = "\\penelopeprime.courses.ebi.ac.uk\shared\Scripts\IP_CSV\" + $VMfile +"_IP_Address.csv"
         
     #Write-Host -ForeGroundColor Green "[INFO] VM IP addresses list file will be stored to: `n$VMIPaddress"
     #$outputBox.AppendText("[INFO] VM IP addresses list file will be stored to: `n$VMIPaddress`r`n")
@@ -1664,7 +1652,7 @@ function main {
 
     # Logging the deployment
     $logDateTime = date -Format dd_MM_yy
-    $global:Logfile = "C:\scripts\" + $VMName_InputBox.text + $logDateTime + ".log"
+    $global:Logfile = "C:\scripts\logs\" + $VMName_InputBox.text + $logDateTime + ".log"
     Write-Host -ForeGroundColor Green "[INFO] Log file is: $global:Logfile `n"
     $timedate = date -Format dd/MM/yy`thh:mm:ss.m
     $VMOpswelcome = $VMOps_DropDownBox.SelectedItem.ToString()
@@ -1716,9 +1704,8 @@ function main {
     [Console]::ResetColor() 
 
     $operationloop = $vm_nbr
-
-        $j=0
-        $i=1
+    $j=0
+    $i=1
 
     while ($i -le $operationloop)
     {
@@ -1731,7 +1718,6 @@ function main {
         
         $time = date -Format dd/MM/yy`thh:mm:ss.m
         LogWrite "[INFO] $time- Working on the VM: $VMName.`n"
-
 
         #####################################################################
         #
@@ -1883,7 +1869,6 @@ function main {
             continue
  
         }
- 
 
         "-----------------------------------------------------"
         Write-Host -ForeGroundColor Green "[INFO] PCI Device with ID '$GPUID' from the host '$destHost' is going to be added to the VM '$destVMName'"
@@ -2083,7 +2068,7 @@ function main {
         $time = date -Format dd/MM/yy`thh:mm:ss.m
         LogWrite "[INFO] $time- Gathering IP addresses... `n"
  
-        $VMIPaddress = "\\penelopeprime.courses.ebi.ac.uk\shared\Scripts\" + $VMfile +"_IP_Address.csv"
+        $VMIPaddress = "\\penelopeprime.courses.ebi.ac.uk\shared\Scripts\IP_CSV\" + $VMfile +"_IP_Address.csv"
         
         Write-Host -ForeGroundColor Green "[INFO] VM IP addresses list file will be stored to: `n$VMIPaddress"
         $outputBox.AppendText("[INFO] VM IP addresses list file will be stored to: `n$VMIPaddress`r`n")
