@@ -1,13 +1,13 @@
 ﻿####################################################################
 # This a GUI for Native Linux pool deployemtn using PowerShell/PowerCLI
-# with VMware Horizon 
-# 
+# with VMware Horizon
+#
 #
 ####################################################################
 
 ####################  Form Initialisation  #######################
 
-[void] [System.Reflection.Assembly]::LoadWithPartialName("System.Drawing") 
+[void] [System.Reflection.Assembly]::LoadWithPartialName("System.Drawing")
 [void] [System.Reflection.Assembly]::LoadWithPartialName("System.Windows.Forms")  #loading the necessary .net libraries (using void to suppress output)
 
 $Form = New-Object System.Windows.Forms.Form                                      #creating the form (this will be the "primary" window)
@@ -34,7 +34,7 @@ $global:agentInstaller = ""
 [bool]$global:vmop = $false
 
 # Message Dialogue function
-function Read-MessageBoxDialog([string]$Message, [string]$WindowTitle, [System.Windows.Forms.MessageBoxButtons]$Buttons = 
+function Read-MessageBoxDialog([string]$Message, [string]$WindowTitle, [System.Windows.Forms.MessageBoxButtons]$Buttons =
 [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]$Icon = [System.Windows.Forms.MessageBoxIcon]::None)
 {
     Add-Type -AssemblyName System.Windows.Forms
@@ -59,7 +59,7 @@ function IsVMExists ()
 		}
 	}
 	return $Exists
-}                                                           
+}
 
 # Delete VM
 function Delete_VM()
@@ -81,35 +81,35 @@ function Check_SSH_Client
         {
           write-host  -ForeGroundColor Green '[INFO] SSH client "plink.exe" found'
           $outputBox.AppendText("[INFO] SSH client plink.exe found`r`n")
-        }   
+        }
         else
         {
           write-host  -ForeGroundColor Red '[ERROR] SSH client "plink.exe" not found, please download from its official web site'
           $outputBox.AppendText("[ERROR] SSH client plink.exe not found, please download from its official web site`r`n")
           exit
         }
-    }    
+    }
     if ($IsPSCP)
     {
         if (Test-Path ".\pscp.exe")
         {
           write-host  -ForeGroundColor Green '[INFO] SSH client "pscp.exe" found'
           $outputBox.AppendText("[INFO] SSH client pscp.exe found`r`n")
-        }   
+        }
         else
         {
           write-host  -ForeGroundColor Red '[ERROR] SSH client "pscp.exe" not found, please download from its official web site'
           $outputBox.AppendText("[ERROR] SSH client pscp.exe not found, please download from its official web site`r`n")
           exit
         }
-    } 
+    }
 }
 
 # Run a command via SSH
 function RunCmdViaSSH
 {
     Param($VM_Name, $User, $Password, $Cmd, $returnOutput = $false)
-    
+
     $VM= Get-VM $VM_Name
     $IP = $VM.guest.IPAddress[0]
     write-host -ForeGroundColor Green "[INFO] Run cmd on $VM_Name ($IP)"
@@ -118,20 +118,20 @@ function RunCmdViaSSH
     {
         $command = "echo yes | .\plink.exe -ssh -l -t $user -pw $password $IP " + '"' + $cmd +'"'
         $output = Invoke-Expression $command
-        return $output    
+        return $output
     }
     else
     {
         echo yes | .\plink.exe -ssh -l $user -pw $password $IP "$cmd"
     }
-    
+
 }
 
 # Upload files using SSH/SCP
 function UploadFileViaSSH
 {
     Param($VM_Name, $User, $Password, $LocalPath, $DestPath)
-    
+
     $VM= Get-VM $VM_Name
     $IP = $VM.guest.IPAddress[0]
     $command = "echo yes | .\pscp.exe -l $User -pw $Password $LocalPath $IP" + ":" + "$DestPath"
@@ -142,7 +142,7 @@ function UploadFileViaSSH
 
 # Open File Dialog box
 function Read-OpenFileDialog([string]$WindowTitle, [string]$InitialDirectory, [string]$Filter = "All files (*.*)|*.*", [switch]$AllowMultiSelect)
-{  
+{
     Add-Type -AssemblyName System.Windows.Forms
     $openFileDialog = New-Object System.Windows.Forms.OpenFileDialog
     $openFileDialog.Title = $WindowTitle
@@ -175,7 +175,7 @@ Function LogWrite
 
 ########################  Text Field  ###########################
 
-# Welcome label 
+# Welcome label
 $wel_label = New-Object system.Windows.Forms.Label
 $wel_label.text = "Automated Native Linux pool deployment using a master VM snapshot. Please fill in the form and accept the EULA licence before proceeding."
 $wel_label.Location = New-Object System.Drawing.Size(20,15)
@@ -187,12 +187,12 @@ $form.controls.add($wel_label)
 $EULA_groupBox = New-Object System.Windows.Forms.GroupBox
 $EULA_groupBox.Autosize = $True
 $EULA_groupBox.Location = New-Object System.Drawing.Size(20,45)
-$EULA_groupBox.size = New-Object System.Drawing.Size(260,50) 
+$EULA_groupBox.size = New-Object System.Drawing.Size(260,50)
 $EULA_groupBox.text = "Linux Horizon Agent EULA Licence"
 $EULA_groupBox.Font = New-Object System.Drawing.Font("Tahoma",10,[System.Drawing.FontStyle]::Bold)
-$Form.Controls.Add($EULA_groupBox) 
+$Form.Controls.Add($EULA_groupBox)
 
-#EULA Licence check box 
+#EULA Licence check box
 $EULA_checkbox = New-Object System.Windows.Forms.CheckBox
 $EULA_checkbox.AutoSize = $True
 $EULA_checkbox.Location = New-Object System.Drawing.Point(15,27)
@@ -206,14 +206,14 @@ $EULA_groupBox.Controls.Add($EULA_checkbox)
 $type_groupBox = New-Object System.Windows.Forms.GroupBox
 $type_groupBox.Autosize = $True
 $type_groupBox.Location = New-Object System.Drawing.Size(300,45)
-$type_groupBox.size = New-Object System.Drawing.Size(140,50) 
+$type_groupBox.size = New-Object System.Drawing.Size(140,50)
 $type_groupBox.text = "Cloning Type"
 $type_groupBox.Font = New-Object System.Drawing.Font("Tahoma",10,[System.Drawing.FontStyle]::Bold)
 $Form.Controls.Add($type_groupBox)
 
 # Cloning Type dropbox
 $Type_DropDownBox = New-Object System.Windows.Forms.ComboBox
-$Type_DropDownBox.Location = New-Object System.Drawing.Size(15,25) 
+$Type_DropDownBox.Location = New-Object System.Drawing.Size(15,25)
 $Type_DropDownBox.Size = New-Object System.Drawing.Size(80,20)
 $Type_DropDownBox.TabIndex = 1
 $Type_DropDownBox.SelectedText = "linked"
@@ -229,37 +229,37 @@ $Type_DropDownBox.SelectedItem = $wksList[0]
 $VMName_groupBox = New-Object System.Windows.Forms.GroupBox
 $VMName_groupBox.Autosize = $True
 $VMName_groupBox.Location = New-Object System.Drawing.Size(460,45)
-$VMName_groupBox.size = New-Object System.Drawing.Size(180,50) 
+$VMName_groupBox.size = New-Object System.Drawing.Size(180,50)
 $VMName_groupBox.text = "Clones VMs Name"
 $VMName_groupBox.Font = New-Object System.Drawing.Font("Tahoma",10,[System.Drawing.FontStyle]::Bold)
 $Form.Controls.Add($VMName_groupBox)
 
 # VMName inputbox
-$VMName_InputBox = New-Object System.Windows.Forms.TextBox 
-$VMName_InputBox.Location = New-Object System.Drawing.Size(15,25) 
+$VMName_InputBox = New-Object System.Windows.Forms.TextBox
+$VMName_InputBox.Location = New-Object System.Drawing.Size(15,25)
 $VMName_InputBox.Size = New-Object System.Drawing.Size(150,50)
 $VMName_InputBox.TabIndex = 2
 $VMName_InputBox.AutoCompleteCustomSource.AddRange(("EMBOMetagenomicVM", "IntroNGSVM", "DataVisialVM", "EMBOMetabolomicsVM", "GenomicMedVM", "PrimersVM", "IntegrativeOmicsVM",
         "ubuntu1404VM", "ProteomicsVM", "BioExcelVM", "GenMedVM", "IntOmicsVM", "OmicsVM", "WTACVM", "IncilicoVM", "SteamCellVM"));
 $VMName_InputBox.AutoCompleteMode = [System.Windows.Forms.AutoCompleteMode]::SuggestAppend;
 $VMName_InputBox.AutoCompleteSource = [System.Windows.Forms.AutoCompleteSource]::CustomSource;
-$VMName_groupBox.Controls.Add($VMName_InputBox) 
+$VMName_groupBox.Controls.Add($VMName_InputBox)
 
 # Parent VMName GroupBox
 $Par_VMName_groupBox = New-Object System.Windows.Forms.GroupBox
 $Par_VMName_groupBox.Autosize = $True
 $Par_VMName_groupBox.Location = New-Object System.Drawing.Size(660,45)
-$Par_VMName_groupBox.size = New-Object System.Drawing.Size(180,50) 
+$Par_VMName_groupBox.size = New-Object System.Drawing.Size(180,50)
 $Par_VMName_groupBox.text = "Parent VM Name"
 $Par_VMName_groupBox.Font = New-Object System.Drawing.Font("Tahoma",10,[System.Drawing.FontStyle]::Bold)
 $Form.Controls.Add($Par_VMName_groupBox)
 
 # Parent VMName inputbox
-$Par_VMName_InputBox = New-Object System.Windows.Forms.TextBox 
-$Par_VMName_InputBox.Location = New-Object System.Drawing.Size(15,25) 
+$Par_VMName_InputBox = New-Object System.Windows.Forms.TextBox
+$Par_VMName_InputBox.Location = New-Object System.Drawing.Size(15,25)
 $Par_VMName_InputBox.Size = New-Object System.Drawing.Size(150,50)
 $Par_VMName_InputBox.TabIndex = 3
-$Par_VMName_InputBox.AutoCompleteCustomSource.AddRange(("EMBOMetagenomicOct17", "IntroNGSApr17", "DataVisJan17", "EMBOMetabolomicsFeb17", "GenomicMedFeb17", 
+$Par_VMName_InputBox.AutoCompleteCustomSource.AddRange(("EMBOMetagenomicOct17", "IntroNGSApr17", "DataVisJan17", "EMBOMetabolomicsFeb17", "GenomicMedFeb17",
 "PrimersJan17", "ubuntu1404", "ProteomicsJan17", "BioExelMay16", "IntegrativeOmicsFeb17"));
 $Par_VMName_InputBox.AutoCompleteMode = [System.Windows.Forms.AutoCompleteMode]::SuggestAppend;
 $Par_VMName_InputBox.AutoCompleteSource = [System.Windows.Forms.AutoCompleteSource]::CustomSource;
@@ -269,12 +269,12 @@ $Par_VMName_groupBox.Controls.Add($Par_VMName_InputBox)
 $vmcon_groupBox = New-Object System.Windows.Forms.GroupBox
 #$vmcon_groupBox.Autosize = $True
 $vmcon_groupBox.Location = New-Object System.Drawing.Size(860,45)
-$vmcon_groupBox.size = New-Object System.Drawing.Size(100,72) 
+$vmcon_groupBox.size = New-Object System.Drawing.Size(100,72)
 $vmcon_groupBox.text = "Disable VM Console"
 $vmcon_groupBox.Font = New-Object System.Drawing.Font("Tahoma",10,[System.Drawing.FontStyle]::Bold)
-$Form.Controls.Add($vmcon_groupBox) 
+$Form.Controls.Add($vmcon_groupBox)
 
-# Disable VM Console check box 
+# Disable VM Console check box
 $vmcon_checkbox = New-Object System.Windows.Forms.CheckBox
 $vmcon_checkbox.AutoSize = $True
 $vmcon_checkbox.Location = New-Object System.Drawing.Point(15,37)
@@ -289,14 +289,14 @@ $vmcon_groupBox.Controls.Add($vmcon_checkbox)
 $data_groupBox = New-Object System.Windows.Forms.GroupBox
 $data_groupBox.Autosize = $True
 $data_groupBox.Location = New-Object System.Drawing.Size(20,130)
-$data_groupBox.size = New-Object System.Drawing.Size(150,50) 
+$data_groupBox.size = New-Object System.Drawing.Size(150,50)
 $data_groupBox.text = "Data Store"
 $data_groupBox.Font = New-Object System.Drawing.Font("Tahoma",10,[System.Drawing.FontStyle]::Bold)
 $Form.Controls.Add($data_groupBox)
 
 # Datastore dropbox
 $data_DropDownBox = New-Object System.Windows.Forms.ComboBox
-$data_DropDownBox.Location = New-Object System.Drawing.Size(15,25) 
+$data_DropDownBox.Location = New-Object System.Drawing.Size(15,25)
 $data_DropDownBox.Size = New-Object System.Drawing.Size(120,20)
 $data_DropDownBox.Autosize = $True
 $data_DropDownBox.TabIndex = 5
@@ -313,14 +313,14 @@ $data_DropDownBox.SelectedItem = $dataList[0]
 $spec_groupBox = New-Object System.Windows.Forms.GroupBox
 $spec_groupBox.Autosize = $True
 $spec_groupBox.Location = New-Object System.Drawing.Size(190,130)
-$spec_groupBox.size = New-Object System.Drawing.Size(180,50) 
+$spec_groupBox.size = New-Object System.Drawing.Size(180,50)
 $spec_groupBox.text = "VM Custom Spec"
 $spec_groupBox.Font = New-Object System.Drawing.Font("Tahoma",10,[System.Drawing.FontStyle]::Bold)
 $Form.Controls.Add($spec_groupBox)
 
 # Custom Spe inputbox
-$spec_InputBox = New-Object System.Windows.Forms.TextBox 
-$spec_InputBox.Location = New-Object System.Drawing.Size(15,25) 
+$spec_InputBox = New-Object System.Windows.Forms.TextBox
+$spec_InputBox.Location = New-Object System.Drawing.Size(15,25)
 $spec_InputBox.Size = New-Object System.Drawing.Size(150,50)
 $spec_InputBox.TabIndex = 6
 $spec_InputBox.Text = "NativeUbuntu"
@@ -333,17 +333,17 @@ $spec_groupBox.Controls.Add($spec_InputBox)
 $snap_groupBox = New-Object System.Windows.Forms.GroupBox
 $snap_groupBox.Autosize = $True
 $snap_groupBox.Location = New-Object System.Drawing.Size(390,130)
-$snap_groupBox.size = New-Object System.Drawing.Size(180,50) 
+$snap_groupBox.size = New-Object System.Drawing.Size(180,50)
 $snap_groupBox.text = "VM Snapshot"
 $snap_groupBox.Font = New-Object System.Drawing.Font("Tahoma",10,[System.Drawing.FontStyle]::Bold)
 $Form.Controls.Add($snap_groupBox)
 
 # Snapshot inputbox
-$snap_InputBox = New-Object System.Windows.Forms.TextBox 
-$snap_InputBox.Location = New-Object System.Drawing.Size(15,25) 
+$snap_InputBox = New-Object System.Windows.Forms.TextBox
+$snap_InputBox.Location = New-Object System.Drawing.Size(15,25)
 $snap_InputBox.Size = New-Object System.Drawing.Size(150,50)
 $snap_InputBox.TabIndex = 7
-$snap_InputBox.AutoCompleteCustomSource.AddRange(("Post_Nvidia", "PostNvidia", "Final", "final_snap", "Final_Snap", "postNvidia", "Nvidia", 
+$snap_InputBox.AutoCompleteCustomSource.AddRange(("Post_Nvidia", "PostNvidia", "Final", "final_snap", "Final_Snap", "postNvidia", "Nvidia",
 "Pre_deployment", "Post_testing", "Post_Test"));
 $snap_InputBox.AutoCompleteMode = [System.Windows.Forms.AutoCompleteMode]::SuggestAppend;
 $snap_InputBox.AutoCompleteSource =[System.Windows.Forms.AutoCompleteSource]::CustomSource;
@@ -353,12 +353,12 @@ $snap_groupBox.Controls.Add($snap_InputBox)
 $del_groupBox = New-Object System.Windows.Forms.GroupBox
 $del_groupBox.Autosize = $True
 $del_groupBox.Location = New-Object System.Drawing.Size(590,130)
-$del_groupBox.size = New-Object System.Drawing.Size(160,50) 
+$del_groupBox.size = New-Object System.Drawing.Size(160,50)
 $del_groupBox.text = "Delete old VM"
 $del_groupBox.Font = New-Object System.Drawing.Font("Tahoma",10,[System.Drawing.FontStyle]::Bold)
-$Form.Controls.Add($del_groupBox) 
+$Form.Controls.Add($del_groupBox)
 
-# Delete if present check box 
+# Delete if present check box
 $del_checkbox = New-Object System.Windows.Forms.CheckBox
 $del_checkbox.AutoSize = $True
 $del_checkbox.Location = New-Object System.Drawing.Point(15,27)
@@ -372,14 +372,14 @@ $del_groupBox.Controls.Add($del_checkbox)
 $vmnbr_groupBox = New-Object System.Windows.Forms.GroupBox
 $vmnbr_groupBox.Autosize = $True
 $vmnbr_groupBox.Location = New-Object System.Drawing.Size(770,130)
-$vmnbr_groupBox.size = New-Object System.Drawing.Size(145,50) 
+$vmnbr_groupBox.size = New-Object System.Drawing.Size(145,50)
 $vmnbr_groupBox.text = "Number of Clones"
 $vmnbr_groupBox.Font = New-Object System.Drawing.Font("Tahoma",10,[System.Drawing.FontStyle]::Bold)
 $Form.Controls.Add($vmnbr_groupBox)
 
 # VM Clones number inputbox
-$vmnbr_InputBox = New-Object System.Windows.Forms.TextBox 
-$vmnbr_InputBox.Location = New-Object System.Drawing.Size(15,25) 
+$vmnbr_InputBox = New-Object System.Windows.Forms.TextBox
+$vmnbr_InputBox.Location = New-Object System.Drawing.Size(15,25)
 $vmnbr_InputBox.Size = New-Object System.Drawing.Size(50,50)
 $vmnbr_InputBox.TabIndex = 9
 $vmnbr_InputBox.Text
@@ -398,7 +398,7 @@ $vmnbr_groupBox.Controls.Add($vmnbr_Label)
 $broker_groupBox = New-Object System.Windows.Forms.GroupBox
 $broker_groupBox.Autosize = $True
 $broker_groupBox.Location = New-Object System.Drawing.Size(20,220)
-$broker_groupBox.size = New-Object System.Drawing.Size(240,150) 
+$broker_groupBox.size = New-Object System.Drawing.Size(240,150)
 $broker_groupBox.text = "Horizon Broker Credentials"
 $broker_groupBox.Font = New-Object System.Drawing.Font("Tahoma",10,[System.Drawing.FontStyle]::Bold)
 $Form.Controls.Add($broker_groupBox)
@@ -412,8 +412,8 @@ $broAdd_Label.AutoSize = $True
 $broker_groupBox.Controls.Add($broAdd_Label)
 
 # Broker address inputbox
-$broAdd_InputBox = New-Object System.Windows.Forms.TextBox 
-$broAdd_InputBox.Location = New-Object System.Drawing.Size(15,43) 
+$broAdd_InputBox = New-Object System.Windows.Forms.TextBox
+$broAdd_InputBox.Location = New-Object System.Drawing.Size(15,43)
 $broAdd_InputBox.Size = New-Object System.Drawing.Size(210,50)
 $broAdd_InputBox.TabIndex = 10
 $broAdd_InputBox.Text = "broker7test.courses.ebi.ac.uk"
@@ -432,8 +432,8 @@ $broadm_Label.AutoSize = $True
 $broker_groupBox.Controls.Add($broadm_Label)
 
 # Broker Admin username inputbox
-$broAdm_InputBox = New-Object System.Windows.Forms.TextBox 
-$broAdm_InputBox.Location = New-Object System.Drawing.Size(15,93) 
+$broAdm_InputBox = New-Object System.Windows.Forms.TextBox
+$broAdm_InputBox.Location = New-Object System.Drawing.Size(15,93)
 $broAdm_InputBox.Size = New-Object System.Drawing.Size(210,50)
 $broAdm_InputBox.TabIndex = 11
 $broAdm_InputBox.Text = "linuxviewagent"
@@ -451,8 +451,8 @@ $bropass_Label.AutoSize = $True
 $broker_groupBox.Controls.Add($bropass_Label)
 
 # Broker Admin PAssword inputbox
-$bropass_InputBox = New-Object System.Windows.Forms.TextBox 
-$bropass_InputBox.Location = New-Object System.Drawing.Size(15,143) 
+$bropass_InputBox = New-Object System.Windows.Forms.TextBox
+$bropass_InputBox.Location = New-Object System.Drawing.Size(15,143)
 $bropass_InputBox.Size = New-Object System.Drawing.Size(210,50)
 $bropass_InputBox.TabIndex = 12
 $bropass_InputBox.UseSystemPasswordChar = $true
@@ -467,8 +467,8 @@ $domain_Label.AutoSize = $True
 $broker_groupBox.Controls.Add($domain_Label)
 
 # Domain Name inputbox
-$domain_InputBox = New-Object System.Windows.Forms.TextBox 
-$domain_InputBox.Location = New-Object System.Drawing.Size(15,193) 
+$domain_InputBox = New-Object System.Windows.Forms.TextBox
+$domain_InputBox.Location = New-Object System.Drawing.Size(15,193)
 $domain_InputBox.Size = New-Object System.Drawing.Size(210,50)
 $domain_InputBox.TabIndex = 13
 $domain_InputBox.Text = "courses.ebi.ac.uk"
@@ -481,7 +481,7 @@ $broker_groupBox.Controls.Add($domain_InputBox)
 $vcenter_groupBox = New-Object System.Windows.Forms.GroupBox
 $vcenter_groupBox.Autosize = $True
 $vcenter_groupBox.Location = New-Object System.Drawing.Size(280,220)
-$vcenter_groupBox.size = New-Object System.Drawing.Size(240,150) 
+$vcenter_groupBox.size = New-Object System.Drawing.Size(240,150)
 $vcenter_groupBox.text = "VCenter Credentials"
 $vcenter_groupBox.Font = New-Object System.Drawing.Font("Tahoma",10,[System.Drawing.FontStyle]::Bold)
 $Form.Controls.Add($vcenter_groupBox)
@@ -495,8 +495,8 @@ $vcAdd_Label.AutoSize = $True
 $vcenter_groupBox.Controls.Add($vcAdd_Label)
 
 # vcenter address inputbox
-$vcAdd_InputBox = New-Object System.Windows.Forms.TextBox 
-$vcAdd_InputBox.Location = New-Object System.Drawing.Size(15,43) 
+$vcAdd_InputBox = New-Object System.Windows.Forms.TextBox
+$vcAdd_InputBox.Location = New-Object System.Drawing.Size(15,43)
 $vcAdd_InputBox.Size = New-Object System.Drawing.Size(210,50)
 $vcAdd_InputBox.TabIndex = 14
 $vcAdd_InputBox.Text = "vcenter.courses.ebi.ac.uk"
@@ -514,8 +514,8 @@ $vcadm_Label.AutoSize = $True
 $vcenter_groupBox.Controls.Add($vcadm_Label)
 
 # Broker Admin username inputbox
-$vcAdm_InputBox = New-Object System.Windows.Forms.TextBox 
-$vcAdm_InputBox.Location = New-Object System.Drawing.Size(15,93) 
+$vcAdm_InputBox = New-Object System.Windows.Forms.TextBox
+$vcAdm_InputBox.Location = New-Object System.Drawing.Size(15,93)
 $vcAdm_InputBox.Size = New-Object System.Drawing.Size(210,50)
 $vcAdm_InputBox.TabIndex = 15
 $vcAdm_InputBox.Text = "alibi"
@@ -533,8 +533,8 @@ $vcpass_Label.AutoSize = $True
 $vcenter_groupBox.Controls.Add($vcpass_Label)
 
 # Broker Admin Password inputbox
-$vcpass_InputBox = New-Object System.Windows.Forms.TextBox 
-$vcpass_InputBox.Location = New-Object System.Drawing.Size(15,143) 
+$vcpass_InputBox = New-Object System.Windows.Forms.TextBox
+$vcpass_InputBox.Location = New-Object System.Drawing.Size(15,143)
 $vcpass_InputBox.Size = New-Object System.Drawing.Size(210,50)
 $vcpass_InputBox.TabIndex = 16
 $vcpass_InputBox.UseSystemPasswordChar = $true
@@ -544,7 +544,7 @@ $vcenter_groupBox.Controls.Add($vcpass_InputBox)
 $guest_groupBox = New-Object System.Windows.Forms.GroupBox
 $guest_groupBox.Autosize = $True
 $guest_groupBox.Location = New-Object System.Drawing.Size(540,220)
-$guest_groupBox.size = New-Object System.Drawing.Size(240,150) 
+$guest_groupBox.size = New-Object System.Drawing.Size(240,150)
 $guest_groupBox.text = "Guest OS User Credentials"
 $guest_groupBox.Font = New-Object System.Drawing.Font("Tahoma",10,[System.Drawing.FontStyle]::Bold)
 $Form.Controls.Add($guest_groupBox)
@@ -558,8 +558,8 @@ $gstusr_Label.AutoSize = $True
 $guest_groupBox.Controls.Add($gstusr_Label)
 
 # Guest username inputbox
-$gstusr_InputBox = New-Object System.Windows.Forms.TextBox 
-$gstusr_InputBox.Location = New-Object System.Drawing.Size(15,43) 
+$gstusr_InputBox = New-Object System.Windows.Forms.TextBox
+$gstusr_InputBox.Location = New-Object System.Drawing.Size(15,43)
 $gstusr_InputBox.Size = New-Object System.Drawing.Size(210,50)
 $gstusr_InputBox.TabIndex = 15
 $gstusr_InputBox.Text = "setup"
@@ -577,8 +577,8 @@ $gstpass_Label.AutoSize = $True
 $guest_groupBox.Controls.Add($gstpass_Label)
 
 # guest Password inputbox
-$gstpass_InputBox = New-Object System.Windows.Forms.TextBox 
-$gstpass_InputBox.Location = New-Object System.Drawing.Size(15,93) 
+$gstpass_InputBox = New-Object System.Windows.Forms.TextBox
+$gstpass_InputBox.Location = New-Object System.Drawing.Size(15,93)
 $gstpass_InputBox.Size = New-Object System.Drawing.Size(210,50)
 $gstpass_InputBox.TabIndex = 16
 $gstpass_InputBox.UseSystemPasswordChar = $true
@@ -593,7 +593,7 @@ $tar_label.Font = New-Object System.Drawing.Font("Calibri",10,[System.Drawing.Fo
 $tar_Label.AutoSize = $True
 $form.controls.add($tar_label)
 
-# Output Box for monitotoring 
+# Output Box for monitotoring
 $outputBox = New-Object System.Windows.Forms.TextBox                              #creating the text box
 $outputBox.Location = New-Object System.Drawing.Size(25,640)                      #location of the text box (px) in relation to the primary window's edges
 $outputBox.Size = New-Object System.Drawing.Size(940,400)                         #the size in px of the text box (length, height)
@@ -602,45 +602,45 @@ $outputBox.ScrollBars = "Both"                                                  
 $outputBox.ForeColor = [Drawing.Color]::Green
 $outputBox.DataBindings.DefaultDataSourceUpdateMode = [System.Windows.Forms.DataSourceUpdateMode]::OnValidation
 $outputBox.TabIndex = 20
-$outputBox.Font = New-Object System.Drawing.Font("Consolas",8,[System.Drawing.FontStyle]::Regular)    #Output text 
+$outputBox.Font = New-Object System.Drawing.Font("Consolas",8,[System.Drawing.FontStyle]::Regular)    #Output text
 $Form.Controls.Add($outputBox)                                                    #activating the text box inside the primary window
 
 ##########################  Buttons #############################
 
 # Upload File Button
-$file_Button = New-Object System.Windows.Forms.Button                                  
-$file_Button.Location = New-Object System.Drawing.Size(20,500)                         
-$file_Button.Size = New-Object System.Drawing.Size(140,60)                              
-$file_Button.Text = "Select Horizon Agent tar ball"                                                
+$file_Button = New-Object System.Windows.Forms.Button
+$file_Button.Location = New-Object System.Drawing.Size(20,500)
+$file_Button.Size = New-Object System.Drawing.Size(140,60)
+$file_Button.Text = "Select Horizon Agent tar ball"
 $file_Button.Font = New-Object System.Drawing.Font("Comic Sans MS",10,[System.Drawing.FontStyle]::Bold)
 $file_Button.Cursor = [System.Windows.Forms.Cursors]::Hand
 #$file_Button.Autosize = $True
 $file_Button.TabIndex = 17
 $file_Button.UseVisualStyleBackColor = $True
-$file_Button.Add_Click({})                                                             
-$Form.Controls.Add($file_Button)                                                       
+$file_Button.Add_Click({})
+$Form.Controls.Add($file_Button)
 $file_Button.Add_Click({
     Write-Host -ForeGroundColor Green "[INFO] Selecting Horizon Agent tarball..."
     $outputBox.AppendText("[INFO] Selecting Horizon Agent tar ball...`r`n")
     $global:agentInstaller = Read-OpenFileDialog -WindowTitle "Select the Horizon Agent tar ball File" -InitialDirectory 'C:\scripts\Horizon_tarballs' -Filter "Tar files (*.tar)|*.tar*"
-    if (![string]::IsNullOrEmpty($global:agentInstaller)) 
-    { 
-        Write-Host -ForeGroundColor Green "[INFO] You selected the Horizon agent tar ball: $global:agentInstaller." 
+    if (![string]::IsNullOrEmpty($global:agentInstaller))
+    {
+        Write-Host -ForeGroundColor Green "[INFO] You selected the Horizon agent tar ball: $global:agentInstaller."
         $outputBox.AppendText("[INFO] You selected the Horizon agent tar ball: $global:agentInstaller.`r`n")
         #$agent_ver = $global:agentInstaller.Substring(11)
         $tar_Label.Text = "Tar selected: $global:agentInstaller"
         $tar_Label.BackColor = [System.Drawing.Color]::DodgerBlue
         $tar_Label.Refresh()
     }
-    else 
-    { 
+    else
+    {
         Write-Host -ForeGroundColor Red "[ERROR] You did not select any file as the Horizon agent tar ball."
         $outputBox.AppendText("[ERROR] You did not select any file as the Horizon agent tar ball.`r`n")
         $tar_Label.Text = "No Horizon Agent tar ball file selected yet."
         $tar_Label.BackColor = [System.Drawing.Color]::DarkOrange
         $tar_Label.Refresh()
     }
-    
+
 })
 
 # Cancel Button
@@ -656,8 +656,8 @@ $btn_CANCEL.Text = "Cancel"
 $btn_CANCEL.Font = New-Object System.Drawing.Font("Comic Sans MS",10,[System.Drawing.FontStyle]::Bold)
 $btn_CANCEL.Add_Click({
     $cancel_ver = Read-MessageBoxDialog -Message "Are you sure you want to cancel the Deployment?" -WindowTitle "Cancel Deployment" -Buttons YesNo -Icon Question
-    if ($cancel_ver -eq "Yes") 
-    { 
+    if ($cancel_ver -eq "Yes")
+    {
         Write-Host -ForeGroundColor Yellow "[DEBUG] Deployment Canceled. Exiting..."
         $outputBox.AppendText("[DEBUG] Deployment Canceled. Exiting...`r`n")
         Start-Sleep -s 1
@@ -717,7 +717,7 @@ $ok_Button.Add_Click({
 
     [bool]$global:vmop = $false
     main
-    
+
 })
 
 # VM Operation Button
@@ -785,7 +785,7 @@ $VMOp_Button.Add_Click({
     $VMOps_Icon = [system.drawing.icon]::ExtractAssociatedIcon($PSHOME + "\powershell.exe")
     $VMOps_Form.Icon = $VMOps_Icon
 
-    # VM Ops Welcome label 
+    # VM Ops Welcome label
     $VMOps_wel_label = New-Object system.Windows.Forms.Label
     $VMOps_wel_label.text = "You must fill out the form before going to the VM Operations Menu!!"
     $VMOps_wel_label.ForeColor = [System.Drawing.Color]::OrangeRed
@@ -798,26 +798,26 @@ $VMOp_Button.Add_Click({
     $VMOps_groupBox = New-Object System.Windows.Forms.GroupBox
     $VMOps_groupBox.Autosize = $True
     $VMOps_groupBox.Location = New-Object System.Drawing.Size(20,50)
-    $VMOps_groupBox.size = New-Object System.Drawing.Size(510,80) 
+    $VMOps_groupBox.size = New-Object System.Drawing.Size(510,80)
     $VMOps_groupBox.text = "Please select on of the following operation to be done into the VMs:"
     $VMOps_groupBox.Font = New-Object System.Drawing.Font("Tahoma",10,[System.Drawing.FontStyle]::Bold)
     $VMOps_Form.Controls.Add($VMOps_groupBox)
 
     # Vm Ops dropbox
     $VMOps_DropDownBox = New-Object System.Windows.Forms.ComboBox
-    $VMOps_DropDownBox.Location = New-Object System.Drawing.Size(15,30) 
+    $VMOps_DropDownBox.Location = New-Object System.Drawing.Size(15,30)
     $VMOps_DropDownBox.Size = New-Object System.Drawing.Size(480,20)
     $VMOps_DropDownBox.Autosize = $True
     $VMOps_DropDownBox.TabIndex = 1
     $VMOps_groupBox.Controls.Add($VMOps_DropDownBox)
-    $VMOps_List = @("(1). Power On", "(2). Power Off", "(3) Shut VM Guest", "(4). Restart VM", "(5). Restart VM Guest", "(6). Delete VM", "(7). Add GPU PCI Device", "(8). Install Horizon Agent", 
-    "(9). Add Network Card", "(10). Connect Network Card", "(11). Get VM IP Address", "(12). Set Linux VM Hostname","(13). Install Nvidia Driver on Linux VM", 
+    $VMOps_List = @("(1). Power On", "(2). Power Off", "(3) Shut VM Guest", "(4). Restart VM", "(5). Restart VM Guest", "(6). Delete VM", "(7). Add GPU PCI Device", "(8). Install Horizon Agent",
+    "(9). Add Network Card", "(10). Connect Network Card", "(11). Get VM IP Address", "(12). Set Linux VM Hostname","(13). Install Nvidia Driver on Linux VM",
     "(14). Migrate VMs equally between Hosts", "(15). Clone VMs for an Inactive pool", "(16) Remove GPU from VM", "(17). Run a Linux Command")
     foreach ($VMOpsstr in $VMOps_List) {
                       $VMOps_DropDownBox.Items.Add($VMOpsstr)
                               } #end foreach
 
-    
+
     # VM Ops select Button
     $VMOps_ok_Button = New-Object System.Windows.Forms.Button                                  #create the button
     $VMOps_ok_Button.Location = New-Object System.Drawing.Size(400,150)                         #location of the button (px) in relation to the primary window's edges
@@ -833,7 +833,7 @@ $VMOp_Button.Add_Click({
     $VMOps_Form.Controls.Add($VMOps_ok_Button)                                                       #activating the button inside the primary window
     $VMOps_ok_Button.Add_Click({
      if (!($VMOps_DropDownBox.SelectedItem -eq $null))
-    { 
+    {
         [bool]$global:vmop = $true
         main
     }
@@ -852,11 +852,11 @@ $VMOp_Button.Add_Click({
     #$btn_CANCEL.BackColor = [System.Drawing.Color]::Orange
     $VMOps_CANCEL.Font = New-Object System.Drawing.Font("Comic Sans MS",10,[System.Drawing.FontStyle]::Bold)
     $VMOps_CANCEL.Add_Click(
-    { 
+    {
         Write-Host -ForeGroundColor Yellow "[DEBUG] VM Operation selection popup box closing."
         $outputBox.AppendText("[DEBUG] VM Operation selection selection popup box closing.`r`n")
         [bool]$global:vmop = $false
-        $VMOps_Form.Close() 
+        $VMOps_Form.Close()
     })
     $VMOps_CANCEL.UseVisualStyleBackColor = $True
     $VMOps_CANCEL.Cursor = [System.Windows.Forms.Cursors]::Hand
@@ -865,14 +865,14 @@ $VMOp_Button.Add_Click({
     $VMOps_Form.Add_Shown({$VMOps_Form.Activate()})
     [void] $VMOps_Form.ShowDialog()
 
-    
+
 })
 
 
 #####################  Main application  ##########################
 
 function main {
-    
+
     [bool]$global:init_dep = $true
     [bool]$global:init_vmops = $true
     if ($EULA_checkbox.Checked -eq $false) # EULA Licence test
@@ -1019,15 +1019,15 @@ function main {
         $vmnbr_groupBox.BackColor = [System.Drawing.Color]::DarkOrange
         $vmnbr_groupBox.Refresh()
     }
-  
+
 
 ########################################################################################################
 ####################################### Main deloyment code ############################################
 ########################################################################################################
-    
+
     if ($global:init_dep -eq $true -and $global:vmop -eq $false)
     {
-     
+
     Write-Host -ForeGroundColor Green "`n########################################################"
     $Org_VMName= $VMName_InputBox.Text
     Write-Host -ForeGroundColor Yellow "[INFO] VMs clones common name: $Org_VMName"
@@ -1044,7 +1044,7 @@ function main {
         $disableVMConsole = "yes"
         Write-Host -ForeGroundColor Green "[INFO] Disabling VM Console."
     }
-    else 
+    else
     {
         $disableVMConsole = "no"
         Write-Host -ForeGroundColor Green "[INFO] Leaving VM Console enabled"
@@ -1142,17 +1142,17 @@ function main {
     $j=0
     $GPUsIdslist= "0000:0a:00.0", "0000:09:00.0", "0000:08:00.0", "0000:07:00.0"
     $destFolder = "/home/$guestUser/"
-    
+
     $destHostList1 = "hx-vdi-hyp159.ebi.ac.uk", "hx-vdi-hyp160.ebi.ac.uk", "hx-vdi-hyp161.ebi.ac.uk", "hx-vdi-hyp162.ebi.ac.uk", "hx-vdi-hyp163.ebi.ac.uk",
      "hx-vdi-hyp164.ebi.ac.uk", "hx-vdi-hyp165.ebi.ac.uk", "hx-vdi-hyp166.ebi.ac.uk", "hx-vdi-hyp167.ebi.ac.uk", "hx-vdi-hyp168.ebi.ac.uk", "hx-vdi-hyp169.ebi.ac.uk",
-     "hx-vdi-hyp170.ebi.ac.uk", "hx-vdi-hyp171.ebi.ac.uk", "hx-vdi-hyp172.ebi.ac.uk", "hx-vdi-hyp173.ebi.ac.uk", "hx-vdi-hyp174.ebi.ac.uk" 
-    
+     "hx-vdi-hyp170.ebi.ac.uk", "hx-vdi-hyp171.ebi.ac.uk", "hx-vdi-hyp172.ebi.ac.uk", "hx-vdi-hyp173.ebi.ac.uk", "hx-vdi-hyp174.ebi.ac.uk"
+
     $destHostList2 = "hx-vdi-hyp174.ebi.ac.uk", "hx-vdi-hyp173.ebi.ac.uk", "hx-vdi-hyp172.ebi.ac.uk", "hx-vdi-hyp171.ebi.ac.uk", "hx-vdi-hyp170.ebi.ac.uk",
-      "hx-vdi-hyp169.ebi.ac.uk", "hx-vdi-hyp168.ebi.ac.uk", "hx-vdi-hyp167.ebi.ac.uk", "hx-vdi-hyp166.ebi.ac.uk", "hx-vdi-hyp165.ebi.ac.uk", 
+      "hx-vdi-hyp169.ebi.ac.uk", "hx-vdi-hyp168.ebi.ac.uk", "hx-vdi-hyp167.ebi.ac.uk", "hx-vdi-hyp166.ebi.ac.uk", "hx-vdi-hyp165.ebi.ac.uk",
        "hx-vdi-hyp164.ebi.ac.uk", "hx-vdi-hyp163.ebi.ac.uk", "hx-vdi-hyp162.ebi.ac.uk", "hx-vdi-hyp161.ebi.ac.uk", "hx-vdi-hyp160.ebi.ac.uk", "hx-vdi-hyp159.ebi.ac.uk"
 
 
-    [Console]::ResetColor() 
+    [Console]::ResetColor()
 
     $deploymentloop = $vm_nbr
 
@@ -1197,20 +1197,35 @@ function main {
         $destHost = $null
 
         if ( $i  % 2 -eq 0)
-        { 
+        {
         foreach ($Hosting in $destHostList1)
         {
             Write-Host -ForeGroundColor Yellow "Testing host $Hosting ..."
             $GpuConf=get-vmhost $Hosting | get-vm | get-view
             $IdList = $GpuConf.config.hardware.device | ?{$_.Backing -is "VMware.Vim.VirtualPCIPassthroughDeviceBackingInfo"} | Select-Object  -Property @{N="Id";E={$_.Backing.Id}}
+            $OnVMlist = Get-VMHost $destHost | Get-VM | Where-Object {$_.PowerState -eq "PoweredOn"}
+            $OnlineVMcount = $OnVMlist.count
 
-            if ($IdList.Id.Length -eq 4)
+            if ($IdList.Id.Length -eq 4 -and $OnlineVMcount -ge 4)
             {
                 Write-Host -ForeGroundColor Yellow "[DEBUG] The ESXi host: $Hosting is full"
                 $outputBox.AppendText("[DEBUG] The ESXi host: $Hosting is full`r`n")
                 LogWrite "[DEBUG] The ESXi host: $Hosting is full`n"
                 continue
             }
+            elseif ($IdList.Id.Length  4 -and $OnlineVMcount -gt 4)
+            {
+             # Ths case of having offline VMs with PCI device connected to them
+             $OffVMlist = Get-VMHost $destHost | Get-VM | Where-Object {$_.PowerState -eq "PoweredOff"}
+
+             Write-Host -ForeGroundColor Yellow "[DEBUG] Removing PCI device from Offline VMs of ESXi host $destHost..."
+             $outputBox.AppendText("[DEBUG] Removing PCI device from Offline VMs of ESXi host $destHost...`r`n")
+             LogWrite "[DEBUG] Removing PCI device from Offline VMs of ESXi host $destHost...`n"
+             foreach ($v in $OffVMlist)
+             {
+                foreach ($vm in (get-vm $v)) {get-vmresourceconfiguration $vm | set-vmresourceconfiguration -MemReservationMB $vm.MemoryMB}
+                get-vm $v | get-passthroughdevice | remove-passthroughdevice -Confirm:$false
+             }
             else
             {
                 $destHost = $Hosting
@@ -1226,12 +1241,26 @@ function main {
             $GpuConf=get-vmhost $Hosting | get-vm | get-view
             $IdList = $GpuConf.config.hardware.device | ?{$_.Backing -is "VMware.Vim.VirtualPCIPassthroughDeviceBackingInfo"} | Select-Object  -Property @{N="Id";E={$_.Backing.Id}}
 
-            if ($IdList.Id.Length -eq 4)
+            if ($IdList.Id.Length -eq 4 -and $OnlineVMcount -ge 4)
             {
                 Write-Host -ForeGroundColor Yellow "[DEBUG] The ESXi host: $Hosting is full"
                 $outputBox.AppendText("[DEBUG] The ESXi host: $Hosting is full`r`n")
                 LogWrite "[DEBUG] The ESXi host: $Hosting is full`n"
                 continue
+            }
+            elseif (!($IdList.Id.Length -eq 4) -and $OnlineVMcount -gt 4)
+            {
+             # Ths case of having offline VMs with PCI device connected to them
+             $OffVMlist = Get-VMHost $destHost | Get-VM | Where-Object {$_.PowerState -eq "PoweredOff"}
+
+             Write-Host -ForeGroundColor Yellow "[DEBUG] Removing PCI device from Offline VMs of ESXi host $destHost..."
+             $outputBox.AppendText("[DEBUG] Removing PCI device from Offline VMs of ESXi host $destHost...`r`n")
+             LogWrite "[DEBUG] Removing PCI device from Offline VMs of ESXi host $destHost...`n"
+             foreach ($v in $OffVMlist)
+             {
+                foreach ($vm in (get-vm $v)) {get-vmresourceconfiguration $vm | set-vmresourceconfiguration -MemReservationMB $vm.MemoryMB}
+                get-vm $v | get-passthroughdevice | remove-passthroughdevice -Confirm:$false
+             }
             }
             else
             {
@@ -1266,15 +1295,15 @@ function main {
         Write-Host -ForeGroundColor Green "[INFO] ESXi host $Hosting has been choosing to host the VM $destVMName"
         $outputBox.AppendText("[INFO] ESXi host $Hosting has been choosing to host the VM $destVMName`r`n")
         LogWrite "[INFO] ESXi host $Hosting has been choosing to host the VM $destVMName`n"
-     
-        # Cloning 
+
+        # Cloning
         $vm = get-vm $srcvm -ErrorAction Stop | get-view -ErrorAction Stop
 	    $cloneSpec = new-object VMware.VIM.VirtualMachineCloneSpec
 	    $cloneSpec.Location = new-object VMware.VIM.VirtualMachineRelocateSpec
 	    if ($CloneType -eq "linked")
 	    {
 		    $cloneSpec.Location.DiskMoveType = [VMware.VIM.VirtualMachineRelocateDiskMoveOptions]::createNewChildDiskBacking
-	    }    
+	    }
 	    Write-Host -ForeGroundColor Green "[INFO] Selecting Datastore: $targetDSName"
 	    $newDS = Get-Datastore $targetDSName | Get-View
 	    $CloneSpec.Location.Datastore =  $newDS.summary.Datastore
@@ -1292,15 +1321,13 @@ function main {
 
         $newvm = Get-vm $destVMName
         $time = date -Format dd/MM/yy`thh:mm:ss.m
-        LogWrite "[INFO] $time- VM $newvm Cloned.`n" 
+        LogWrite "[INFO] $time- VM $newvm Cloned.`n"
         $customSpec = Get-OSCustomizationSpec $cSpec
-        Set-vm -OSCustomizationSpec $cSpec -vm $newvm -confirm:$false 
+        Set-vm -OSCustomizationSpec $cSpec -vm $newvm -confirm:$false
 	    if ($disableVMConsole -eq "yes")
 	    {
 		    Disable_VM_Console($destVMName)
-	    } 
-
-
+	    }
         # Add GPU card passthrough
 
         $GpuConf=get-vmhost $destHost | get-vm | get-view
@@ -1324,7 +1351,7 @@ function main {
           }
           else
           {
-             $GPUID = $GPUsIdslist[3] 
+             $GPUID = $GPUsIdslist[3]
           }
       }
         "-----------------------------------------------------"
@@ -1333,7 +1360,7 @@ function main {
         $time = date -Format dd/MM/yy`thh:mm:ss.m
         LogWrite "[INFO] $time- PCI Device with ID '$GPUID' from the host '$destHost' is going to be added to the VM '$destVMName'"
         "-----------------------------------------------------"
-        
+
         add-uniquepcipassthroughdevice $newvm $GPUID $destHost
 
         Start-Sleep -s 5
@@ -1347,8 +1374,8 @@ function main {
         $devname = $device.Name
 
         $devid = $h.backing.Id
-    
-        "-----------------------------------------------------"    
+
+        "-----------------------------------------------------"
         Write-Host -ForeGroundColor Green "[INFO] PCI Device '$devname' with ID: ' $devid ' has been added to the VM '$newvm'`n"
         $outputBox.AppendText("[INFO] PCI Device '$devname' with ID: ' $devid ' has been added to the VM '$newvm'`r`n`n")
         $time = date -Format dd/MM/yy`thh:mm:ss.m
@@ -1373,7 +1400,7 @@ function main {
         $outputBox.AppendText("[INFO] Network connectivity of the VM '$newvm' checked.`r`n")
         $time = date -Format dd/MM/yy`thh:mm:ss.m
         LogWrite "[INFO] $time- Network connectivity checked.`n"
-        
+
         $time = date -Format dd/MM/yy`thh:mm:ss.m
         Write-Host -ForeGroundColor Green "[INFO] VM $newvm Cloned successfuly. Moving to next VM.`n"
         Write-Host -ForeGroundColor Green "#################################################################################`n"
@@ -1381,7 +1408,7 @@ function main {
         $outputBox.AppendText("#################################################################################.`r`n")
         LogWrite "[INFO] $time- VM $newvm cloned with success. Moving to next VM.`n"
         LogWrite "#################################################################################`n"
-        #$outputBox.AppendText("###############  VM $newvm Cloned successfuly. Moving to next VM  ##############`r`n")                                         
+        #$outputBox.AppendText("###############  VM $newvm Cloned successfuly. Moving to next VM  ##############`r`n")
         $outputBox.SelectionStart = $outputBox.Text.Length
         $outputBox.ScrollToCaret()
 
@@ -1419,7 +1446,7 @@ function main {
         $Ipchecker = $newvm.Guest.IPAddress.Count.ToString()
 
         Write-Host -ForeGroundColor Yellow "VM $newvm is still Offline. Sys-IP nbrs: $Ipchecker"
-        
+
         }
 
         if ( $timerout -ige 18 -and !($newvm.Guest.IPAddress.Count -ige 2))
@@ -1446,7 +1473,7 @@ function main {
             LogWrite "[INFO] $time- VM $newvm is now Online with IP address: $NewVMIPaddr. After a wait of $counttimer sec.`n"
             $outputBox.AppendText("[INFO] VM $newvm is now Online with IP address: $NewVMIPaddr. After a wait of $counttimer sec.`r`n")
         }
-        
+
         # Installing and configuring eth Horizon agent on the VM
         $time = date -Format dd/MM/yy`thh:mm:ss.m
         LogWrite "[INFO] $time- Configuring VM $newvm to install Horizon Agent."
@@ -1470,9 +1497,9 @@ function main {
         Write-Host -ForeGroundColor Green "[INFO] Upload the Horizon Agent tar ball: '$agentInstaller' to the VM '$newvm' with user '$guestUser'."
         $outputBox.AppendText("[INFO] Upload the Horizon Agent tar ball: '$agentInstaller' to the VM '$newvm' with user '$guestUser'.`r`n")
         UploadFileViaSSH -VM_Name $newvm -User $guestUser -Password $guestPassword -LocalPath $agentInstaller -DestPath $destFolder
-        
+
         #Extract the installer
-        Write-Host -ForeGroundColor Yellow "$newvm : Extract the installer and start the installation"        
+        Write-Host -ForeGroundColor Yellow "$newvm : Extract the installer and start the installation"
         $cmd = "tar -xvf VMware-*-linux-*.tar*"
         Write-Host -ForeGroundColor Yellow "Run cmd '$cmd' in VM '$newvm' with user '$guestUser'"
         $taroutput = RunCmdViaSSH -VM_Name $newvm -User $guestUser -Password $guestPassword -Cmd $cmd
@@ -1493,7 +1520,7 @@ function main {
         LogWrite "[INFO] $time- VM $newvm Configured successfully. Moving to next VM...`n"
         LogWrite "#################################################################################`n"
         $outputBox.AppendText("[INFO] VM $newvm Configured successfuly. Moving to next VM...`r`n")
-        $outputBox.AppendText("#################################################################################`r`n")                                        
+        $outputBox.AppendText("#################################################################################`r`n")
         $outputBox.SelectionStart = $outputBox.Text.Length
         $outputBox.ScrollToCaret()
 
@@ -1536,16 +1563,16 @@ function main {
 
     $time = date -Format dd/MM/yy`thh:mm:ss.m
     LogWrite "[INFO] $time- Gathering IP addresses... `n"
- 
+
     $VMIPaddress = "\\penelopeprime.courses.ebi.ac.uk\shared\Scripts\IP_CSV\" + $VMfile +"_IP_Address.csv"
-        
+
     #Write-Host -ForeGroundColor Green "[INFO] VM IP addresses list file will be stored to: `n$VMIPaddress"
     #$outputBox.AppendText("[INFO] VM IP addresses list file will be stored to: `n$VMIPaddress`r`n")
     $time = date -Format dd/MM/yy`thh:mm:ss.m
     LogWrite "[INFO] $time- The VM list is stored at: $VMIPaddress`n"
 
     Get-VM $VMlist | select Name, @{N="IPAddress";E={@($_.guest.IPAddress[0])}} | out-file $VMIPaddress -Encoding ASCII
-        
+
     Write-Host -ForeGroundColor Green "[INFO] IP Address has been gathered and saved into $VMIPaddress"
     $outputBox.AppendText("[INFO] IP Address has been gathered and saved into $VMIPaddress`r`n")
     notepad.exe $VMIPaddress
@@ -1562,8 +1589,8 @@ function main {
     LogWrite "[INFO]- The script has ended at: $timedate1"
     LogWrite "#################################################################################`n"
     LogWrite "#################################################################################`n"
-    Disconnect-VIServer $vcAddress -Confirm:$false                
-                     
+    Disconnect-VIServer $vcAddress -Confirm:$false
+
     }
 
 
@@ -1572,9 +1599,9 @@ function main {
 ############################# VM Operations code #######################################################
 ########################################################################################################
 
-    elseif ($global:init_vmops -eq $true -and $global:vmop -eq $true)   
+    elseif ($global:init_vmops -eq $true -and $global:vmop -eq $true)
     {
-    
+
     Write-Host -ForeGroundColor Green "`n#################################################################"
     $Org_VMName= $VMName_InputBox.Text
     Write-Host -ForeGroundColor Yellow "[INFO] VMs clones common name: $Org_VMName"
@@ -1590,7 +1617,7 @@ function main {
         $disableVMConsole = "yes"
         Write-Host -ForeGroundColor Green "[INFO] Disabling VM Console."
     }
-    else 
+    else
     {
         $disableVMConsole = "no"
         Write-Host -ForeGroundColor Green "[INFO] Leaving VM Console enabled"
@@ -1680,20 +1707,20 @@ function main {
     if (!( $vcAdm_InputBox.Text -eq "" -or $vcpass_InputBox.Text -eq ""))
     { Connect-VIServer $vcAddress -user $vcAdmin -password $vcPassword }
     else { Connect-VIServer $vcAddress }
-     
+
     $time = date -Format dd/MM/yy`thh:mm:ss.m
     LogWrite "[INFO] $time- Connecting to vCenter Address: $vcAddress."
 
 
     $GPUsIdslist= "0000:0a:00.0", "0000:09:00.0", "0000:08:00.0", "0000:07:00.0"
     $destFolder = "/home/$guestUser/"
-    
+
     $destHostList1 = "hx-vdi-hyp159.ebi.ac.uk", "hx-vdi-hyp160.ebi.ac.uk", "hx-vdi-hyp161.ebi.ac.uk", "hx-vdi-hyp162.ebi.ac.uk", "hx-vdi-hyp163.ebi.ac.uk",
      "hx-vdi-hyp164.ebi.ac.uk", "hx-vdi-hyp165.ebi.ac.uk", "hx-vdi-hyp166.ebi.ac.uk", "hx-vdi-hyp167.ebi.ac.uk", "hx-vdi-hyp168.ebi.ac.uk", "hx-vdi-hyp169.ebi.ac.uk",
-     "hx-vdi-hyp170.ebi.ac.uk", "hx-vdi-hyp171.ebi.ac.uk", "hx-vdi-hyp172.ebi.ac.uk", "hx-vdi-hyp173.ebi.ac.uk", "hx-vdi-hyp174.ebi.ac.uk" 
-    
+     "hx-vdi-hyp170.ebi.ac.uk", "hx-vdi-hyp171.ebi.ac.uk", "hx-vdi-hyp172.ebi.ac.uk", "hx-vdi-hyp173.ebi.ac.uk", "hx-vdi-hyp174.ebi.ac.uk"
+
     $destHostList2 = "hx-vdi-hyp174.ebi.ac.uk", "hx-vdi-hyp173.ebi.ac.uk", "hx-vdi-hyp172.ebi.ac.uk", "hx-vdi-hyp171.ebi.ac.uk", "hx-vdi-hyp170.ebi.ac.uk",
-      "hx-vdi-hyp169.ebi.ac.uk", "hx-vdi-hyp168.ebi.ac.uk", "hx-vdi-hyp167.ebi.ac.uk", "hx-vdi-hyp166.ebi.ac.uk", "hx-vdi-hyp165.ebi.ac.uk", 
+      "hx-vdi-hyp169.ebi.ac.uk", "hx-vdi-hyp168.ebi.ac.uk", "hx-vdi-hyp167.ebi.ac.uk", "hx-vdi-hyp166.ebi.ac.uk", "hx-vdi-hyp165.ebi.ac.uk",
        "hx-vdi-hyp164.ebi.ac.uk", "hx-vdi-hyp163.ebi.ac.uk", "hx-vdi-hyp162.ebi.ac.uk", "hx-vdi-hyp161.ebi.ac.uk", "hx-vdi-hyp160.ebi.ac.uk", "hx-vdi-hyp159.ebi.ac.uk"
 
     $VMOpswelcome = $VMOps_DropDownBox.SelectedItem.ToString()
@@ -1701,7 +1728,7 @@ function main {
     write-host -ForeGroundColor Yellow "[INFO] VM Operations @@  $VMOpswelcome  @@  Started."
     $outputBox.AppendText("[INFO] VM Operations @@  $VMOpswelcome  @@  Started.`r`n")
     Write-Host -ForeGroundColor Green "#################################################################"
-    [Console]::ResetColor() 
+    [Console]::ResetColor()
 
     $operationloop = $vm_nbr
     $j=0
@@ -1715,25 +1742,25 @@ function main {
         $VMName = $destVMName
         write-host -ForeGroundColor Yellow "`n############ Operation Nbr: $j  On: $VMName      ##########`n"
         $outputBox.AppendText("`r`n############ Operation Nbr: $j  On: $VMName     ##########`r`n")
-        
+
         $time = date -Format dd/MM/yy`thh:mm:ss.m
         LogWrite "[INFO] $time- Working on the VM: $VMName.`n"
 
         #####################################################################
         #
         #
-        # "(1). Power On", "(2). Power Off", "(3) Shut VM Guest", "(4). Restart VM", "(5). Restart VM Guest", "(6). Delete VM", "(7). Add GPU PCI Device", "(8). Install Horizon Agent", 
-        # "(9). Add Network Card", "(10). Connect Network Card", "(11). Get VM IP Address", "(12). Set Linux VM Hostname","(13). Install Nvidia Driver on Linux VM", 
+        # "(1). Power On", "(2). Power Off", "(3) Shut VM Guest", "(4). Restart VM", "(5). Restart VM Guest", "(6). Delete VM", "(7). Add GPU PCI Device", "(8). Install Horizon Agent",
+        # "(9). Add Network Card", "(10). Connect Network Card", "(11). Get VM IP Address", "(12). Set Linux VM Hostname","(13). Install Nvidia Driver on Linux VM",
         # "(14). Migrate VMs equally between Hosts", "(15). Clone VMs for an Inactive pool", "(16) Remove GPU from VM", "(17). Run a Linux Command"
         #
         #
         #####################################################################
 
-        switch ($VMOps_DropDownBox.SelectedItem.ToString()) 
-    { 
-      "(1). Power On" 
+        switch ($VMOps_DropDownBox.SelectedItem.ToString())
+    {
+      "(1). Power On"
       {
-        
+
         write-host -ForeGroundColor Green "[INFO] Starting VM $VMName..."
         $outputBox.AppendText("[INFO] Starting VM $VMName...`r`n")
         Get-VM $VMName | where { $_.PowerState –eq "PoweredOff" } | Start-VM -Confirm:$false
@@ -1742,8 +1769,8 @@ function main {
         $time = date -Format dd/MM/yy`thh:mm:ss.m
         LogWrite "[INFO] $time- Starting VM: $VMName."
 
-      } 
-      "(2). Power Off" 
+      }
+      "(2). Power Off"
       {
         write-host -ForeGroundColor Green "[INFO] Stopping VM $VMName..."
         $outputBox.AppendText("[INFO] Stopping VM $VMName...`r`n")
@@ -1752,8 +1779,8 @@ function main {
         Write-Host -ForeGroundColor Green "#################################################################################`n"
         $time = date -Format dd/MM/yy`thh:mm:ss.m
         LogWrite "[INFO] $time- Shutting down VM: $VMName."
-      } 
-      "(3) Shut VM Guest" 
+      }
+      "(3) Shut VM Guest"
       {
         write-host -ForeGroundColor Green "[INFO] Shutting down VM $VMName Guest..."
         $outputBox.AppendText("[INFO] Shutting down VM $VMName Guest...`r`n")
@@ -1762,8 +1789,8 @@ function main {
         Write-Host -ForeGroundColor Green "#################################################################################`n"
         $time = date -Format dd/MM/yy`thh:mm:ss.m
         LogWrite "[INFO] $time- Shutting down VMGuest of: $VMName."
-      } 
-      "(4). Restart VM" 
+      }
+      "(4). Restart VM"
       {
         write-host -ForeGroundColor Green "[INFO] Restarting VM $VMName..."
         $outputBox.AppendText("[INFO] Restarting VM $VMName Guest...`r`n")
@@ -1785,7 +1812,7 @@ function main {
       }
       "(6). Delete VM"
       {
-	    
+
         if (IsVMExists ($VMName))
 	       {
               write-host -ForeGroundColor Green "[INFO] Deleting VM $VMName..."
@@ -1794,28 +1821,28 @@ function main {
               $time = date -Format dd/MM/yy`thh:mm:ss.m
               LogWrite "[INFO] $time- Deleting VM: $VMName."
 	        }
-        
+
         $outputBox.AppendText("[INFO] VM $VMName Deleted.`r`n")
         Write-Host -ForeGroundColor Green "[INFO] VM $VMName Deleted."
         $outputBox.AppendText("#################################################################################`r`n`r`n")
         Write-Host -ForeGroundColor Green "#################################################################################`n"
 
         $time = date -Format dd/MM/yy`thh:mm:ss.m
-        LogWrite "[INFO] $time- VM: $VMName deleted."   
-       
+        LogWrite "[INFO] $time- VM: $VMName deleted."
+
        }
        "(7). Add PCI Device"
       {
 
         # Add PCi device GPU
 
-        #$taskShDn = 
+        #$taskShDn =
         Get-VM $VMName | where { $_.PowerState –eq "PoweredOn" } | Stop-VM –confirm:$false
 
         Start-Sleep -s 7
 
         $GPUsIdslist= "0000:0a:00.0", "0000:09:00.0", "0000:08:00.0", "0000:07:00.0"
-        
+
         foreach ($vm in (get-vm $VMName)) {get-vmresourceconfiguration $vm | set-vmresourceconfiguration -MemReservationMB $vm.MemoryMB}
 
         $GPUID = "null"
@@ -1827,7 +1854,7 @@ function main {
         $destHost = $newvm.VMHost.Name
 
         #get VMs from a host
-        
+
         $GpuConf=get-vmhost $destHost | get-vm | get-view
 
         $IdList = $GpuConf.config.hardware.device | ?{$_.Backing -is "VMware.Vim.VirtualPCIPassthroughDeviceBackingInfo"} | Select-Object  -Property @{N="Id";E={$_.Backing.Id}}
@@ -1853,7 +1880,7 @@ function main {
             }
             else
             {
-               $GPUID = $GPUsIdslist[3] 
+               $GPUID = $GPUsIdslist[3]
             }
         }
 
@@ -1867,7 +1894,7 @@ function main {
             "-----------------------------------------------------"
             #$operationloop = $i
             continue
- 
+
         }
 
         "-----------------------------------------------------"
@@ -1890,9 +1917,9 @@ function main {
         $devname = $device.Name
 
         $devid = $h.backing.Id
-         
-    
-        "-----------------------------------------------------"    
+
+
+        "-----------------------------------------------------"
         Write-Host -ForeGroundColor Green "[INFO] PCI Device '$devname' with ID: ' $devid ' has been added to the VM '$newvm'"
         $outputBox.AppendText("[INFO] PCI Device '$devname' with ID: ' $devid ' has been added to the VM '$newvm'`r`n")
         $outputBox.AppendText("#################################################################################`r`n`r`n")
@@ -1906,7 +1933,7 @@ function main {
 
         # Start the VM
 	    Start-VM $VMName
-        
+
         $time = date -Format hh:mm:ss.ms
         LogWrite "[INFO] $time- PCI Device Added to VM $VMName`n"
         LogWrite "#################################################################################`n"
@@ -1939,7 +1966,7 @@ function main {
         $Ipchecker = $newvm.Guest.IPAddress.Count.ToString()
 
         Write-Host -ForeGroundColor Yellow "VM $newvm is still Offline. Sys-IP nbrs: $Ipchecker"
-        
+
         }
 
         if ( $timerout -ige 18 -and !($newvm.Guest.IPAddress.Count -ige 2))
@@ -1966,7 +1993,7 @@ function main {
             LogWrite "[INFO] $time- VM $newvm is now Online with IP address: $NewVMIPaddr. After a wait of $counttimer sec.`n"
             $outputBox.AppendText("[INFO] VM $newvm is now Online with IP address: $NewVMIPaddr. After a wait of $counttimer sec.`r`n")
         }
-        
+
         # Installing and configuring eth Horizon agent on the VM
         $time = date -Format dd/MM/yy`thh:mm:ss.m
         LogWrite "[INFO] $time- Configuring VM $newvm to install Horizon Agent."
@@ -1990,9 +2017,9 @@ function main {
         Write-Host -ForeGroundColor Green "[INFO] Upload the Horizon Agent tar ball: '$agentInstaller' to the VM '$newvm' with user '$guestUser'."
         $outputBox.AppendText("[INFO] Upload the Horizon Agent tar ball: '$agentInstaller' to the VM '$newvm' with user '$guestUser'.`r`n")
         UploadFileViaSSH -VM_Name $newvm -User $guestUser -Password $guestPassword -LocalPath $agentInstaller -DestPath $destFolder
-        
+
         #Extract the installer
-        Write-Host -ForeGroundColor Yellow "$newvm : Extract the installer and start the installation"        
+        Write-Host -ForeGroundColor Yellow "$newvm : Extract the installer and start the installation"
         $cmd = "tar -xvf VMware-*-linux-*.tar*"
         Write-Host -ForeGroundColor Yellow "Run cmd '$cmd' in VM '$newvm' with user '$guestUser'"
         $taroutput = RunCmdViaSSH -VM_Name $newvm -User $guestUser -Password $guestPassword -Cmd $cmd
@@ -2013,13 +2040,13 @@ function main {
         LogWrite "[INFO] $time-Horizon Agnet installed on VM $newvm. Moving to next VM...`n"
         LogWrite "#################################################################################`n"
         $outputBox.AppendText("[INFO] Horizon Agnet installed on VM $newvm. Moving to next VM...`r`n")
-        $outputBox.AppendText("#################################################################################`r`n")                                        
+        $outputBox.AppendText("#################################################################################`r`n")
         $outputBox.SelectionStart = $outputBox.Text.Length
         $outputBox.ScrollToCaret()
 
         [Console]::ResetColor()
        }
-       "(9). Add Network Card" 
+       "(9). Add Network Card"
       {
         # Adding Network adapter to the VM
         $outputBox.AppendText("[INFO] Adding Network card on VM $VMNames...`r`n")
@@ -2056,7 +2083,7 @@ function main {
         $time = date -Format hh:mm:ss.ms
         LogWrite "[INFO] $time- Network adpater conected. Moving to next VM`n"
         LogWrite "#################################################################################`n"
-         
+
       }
        "(11). Get VM IP Address"
        {
@@ -2067,16 +2094,16 @@ function main {
 
         $time = date -Format dd/MM/yy`thh:mm:ss.m
         LogWrite "[INFO] $time- Gathering IP addresses... `n"
- 
+
         $VMIPaddress = "\\penelopeprime.courses.ebi.ac.uk\shared\Scripts\IP_CSV\" + $VMfile +"_IP_Address.csv"
-        
+
         Write-Host -ForeGroundColor Green "[INFO] VM IP addresses list file will be stored to: `n$VMIPaddress"
         $outputBox.AppendText("[INFO] VM IP addresses list file will be stored to: `n$VMIPaddress`r`n")
         $time = date -Format dd/MM/yy`thh:mm:ss.m
         LogWrite "[INFO] $time- The VM list is stored at: $VMIPaddress`n"
 
         Get-VM $VMlist | select Name, @{N="IPAddress";E={@($_.guest.IPAddress[0])}} | out-file $VMIPaddress -Encoding ASCII
-        
+
         Write-Host -ForeGroundColor Green "[INFO] IP Address has been gathered and saved into $VMIPaddress"
         Write-Host -ForeGroundColor Green "#################################################################################`n"
         $outputBox.AppendText("[INFO] IP Address has been gathered and saved into $VMIPaddress`r`n")
@@ -2106,12 +2133,12 @@ function main {
         $time = date -Format hh:mm:ss.ms
         LogWrite "[INFO] $time- Hostname update on VM  $VMName`n"
         LogWrite "#################################################################################`n"
-        
+
        }
 
        "(13). Install Nvidia Driver on Linux VM"
        {
-        
+
         #Install the Nvidia Driver
         $outputBox.AppendText("[INFO] Installing Nvidia Driver into VM $VMNames...`r`n")
         Write-Host -ForeGroundColor Green "[INFO] Installing Nvidia Driver into VM $VMNames..."
@@ -2122,7 +2149,7 @@ function main {
         Write-Host -ForeGroundColor Yelllow "[DEBUG] VM $VMNames is about to restart to apply Nvidia driver changes."
         $outputBox.AppendText("#################################################################################`r`n`r`n")
         Write-Host -ForeGroundColor Green "#################################################################################`n"
-        
+
       }
        "(14). Migrate VMs equally between Hosts"
       {
@@ -2157,7 +2184,7 @@ function main {
             $destHost = $null
 
             if ( $i  % 2 -eq 0)
-            { 
+            {
             foreach ($Hosting in $destHostList1)
             {
                 Write-Host -ForeGroundColor Yellow "Testing host $Hosting ..."
@@ -2225,7 +2252,7 @@ function main {
                 Start-sleep -s 2
                 $operationloop = $lastgoodi
                 continue
-                #break    
+                #break
             }
             # VM Migration happens now
             Get-VM $VMName | Move-VM -Destination (Get-VMHost $destHost)
@@ -2235,14 +2262,14 @@ function main {
             LogWrite "[INFO] The VM $VMName has been migrated. Adding GPU PCI device to it...`n"
 
         }
-        elseif (!($IdList.Id.Length -eq 4 -and $OnlineVMcount -gt 4)) 
+        elseif (!($IdList.Id.Length -eq 4 -and $OnlineVMcount -gt 4))
         {
             # Nothing happenes, The VM stays in teh current host and then gets a GPU PCI devie added to it
             Write-Host -ForeGroundColor Green "[INFO] Current ESXi host: $destHost is alright. Adding GPU PCI device to the VM $VMName..."
             $outputBox.AppendText("[INFO] Current ESXi host: $destHost is alright. Adding GPU PCI device to the VM $VMName...`r`n")
             LogWrite "[INFO] Current ESXi host: $destHost is alright. Adding GPU PCI device to the VM $VMName...`n"
         }
-        elseif (!($IdList.Id.Length -eq 4) -and $OnlineVMcount -gt 4) 
+        elseif (!($IdList.Id.Length -eq 4) -and $OnlineVMcount -gt 4)
         {
          # Ths case of having offline VMs with PCI device connected to them
          $OffVMlist = Get-VMHost $destHost | Get-VM | Where-Object {$_.PowerState -eq "PoweredOff"}
@@ -2269,9 +2296,7 @@ function main {
          Write-Host -ForeGroundColor Yellow ($OnVMNAmelist | Format-Table | Out-String)
          $outputBox.AppendText(($OnVMNAmelist | Format-Table | Out-String))
          LogWrite ($OnVMNAmelist | Format-Table | Out-String)
-
         }
-
         # Adding GPU PCI card via passthrough
         $GpuConf=get-vmhost $destHost | get-vm | get-view
         $IdList = $GpuConf.config.hardware.device | ?{$_.Backing -is "VMware.Vim.VirtualPCIPassthroughDeviceBackingInfo"} | Select-Object  -Property @{N="Id";E={$_.Backing.Id}}
@@ -2294,7 +2319,7 @@ function main {
           }
           else
           {
-             $GPUID = $GPUsIdslist[3] 
+             $GPUID = $GPUsIdslist[3]
           }
       }
         "-----------------------------------------------------"
@@ -2303,28 +2328,23 @@ function main {
         $time = date -Format dd/MM/yy`thh:mm:ss.m
         LogWrite "[INFO] $time- PCI Device with ID '$GPUID' from the host '$destHost' is going to be added to the VM '$destVMName'"
         "-----------------------------------------------------"
-        
         add-uniquepcipassthroughdevice $newvm $GPUID $destHost
-
         Start-Sleep -s 5
 
         $g=get-view -viewtype VirtualMachine -filter @{"Name"=$destVMName}
         $h=$g.config.hardware.device | ?{$_.Backing -like "*Pass*"}
         $h.backing
-
         $gpuvm = Get-VM $newvm
         $device = Get-PassthroughDevice -VM $gpuvm -Type Pci
         $devname = $device.Name
-
         $devid = $h.backing.Id
-    
-        "-----------------------------------------------------"    
+
+        "-----------------------------------------------------"
         Write-Host -ForeGroundColor Green "[INFO] PCI Device '$devname' with ID: ' $devid ' has been added to the VM '$newvm'`n"
         $outputBox.AppendText("[INFO] PCI Device '$devname' with ID: ' $devid ' has been added to the VM '$newvm'`r`n`n")
         $time = date -Format dd/MM/yy`thh:mm:ss.m
         LogWrite "[INFO] $time- PCI Device '$devname' with ID: ' $devid ' has been added to the VM '$newvm'`n`n"
         "-----------------------------------------------------"
-
         foreach ($vm in (get-vm $newvm)) {get-vmresourceconfiguration $vm | set-vmresourceconfiguration -MemReservationMB $vm.MemoryMB}
 
         # Starting the VM To not confuse it for an offline VM holding a PCI device
@@ -2352,8 +2372,8 @@ function main {
         $outputBox.AppendText("`r`n############ Clone Nbr: $j   On: $VMName     ##########`r`n")
         $time = date -Format dd/MM/yy`thh:mm:ss.m
         LogWrite "[INFO] $time- Cloning the VM: $VMName started.`n"
-        
-        
+
+
 	    if (IsVMExists ($destVMName))
 	    {
 		    Write-Host -ForeGroundColor Yellow "[DEBUG] VM $destVMName already Exists in VC $vcAddress"
@@ -2381,7 +2401,7 @@ function main {
         $destHost = $null
 
         if ( $i  % 2 -eq 0)
-        { 
+        {
         foreach ($Hosting in $destHostList1)
         {
             Write-Host -ForeGroundColor Yellow "Testing host $Hosting ..."
@@ -2443,7 +2463,7 @@ function main {
             $operationloop = $lastgoodi
             continue
             #break
-            
+
 
         }
 
@@ -2451,15 +2471,15 @@ function main {
         Write-Host -ForeGroundColor Green "[INFO] ESXi host $Hosting has been choosing to host the VM $destVMName"
         $outputBox.AppendText("[INFO] ESXi host $Hosting has been choosing to host the VM $destVMName`r`n")
         LogWrite "[INFO] ESXi host $Hosting has been choosing to host the VM $destVMName`n"
-     
-        # Cloning 
+
+        # Cloning
         $vm = get-vm $srcvm -ErrorAction Stop | get-view -ErrorAction Stop
 	    $cloneSpec = new-object VMware.VIM.VirtualMachineCloneSpec
 	    $cloneSpec.Location = new-object VMware.VIM.VirtualMachineRelocateSpec
 	    if ($CloneType -eq "linked")
 	    {
 		    $cloneSpec.Location.DiskMoveType = [VMware.VIM.VirtualMachineRelocateDiskMoveOptions]::createNewChildDiskBacking
-	    }    
+	    }
 	    Write-Host -ForeGroundColor Green "[INFO] Selecting Datastore: $targetDSName"
 	    $newDS = Get-Datastore $targetDSName | Get-View
 	    $CloneSpec.Location.Datastore =  $newDS.summary.Datastore
@@ -2477,13 +2497,13 @@ function main {
 
         $newvm = Get-vm $destVMName
         $time = date -Format dd/MM/yy`thh:mm:ss.m
-        LogWrite "[INFO] $time- VM $newvm Cloned.`n" 
+        LogWrite "[INFO] $time- VM $newvm Cloned.`n"
         $customSpec = Get-OSCustomizationSpec $cSpec
-        Set-vm -OSCustomizationSpec $cSpec -vm $newvm -confirm:$false 
+        Set-vm -OSCustomizationSpec $cSpec -vm $newvm -confirm:$false
 	    if ($disableVMConsole -eq "yes")
 	    {
 		    Disable_VM_Console($destVMName)
-	    } 
+	    }
 
         # Adding GPU card passthrough
 
@@ -2508,7 +2528,7 @@ function main {
           }
           else
           {
-             $GPUID = $GPUsIdslist[3] 
+             $GPUID = $GPUsIdslist[3]
           }
       }
         "-----------------------------------------------------"
@@ -2517,7 +2537,7 @@ function main {
         $time = date -Format dd/MM/yy`thh:mm:ss.m
         LogWrite "[INFO] $time- PCI Device with ID '$GPUID' from the host '$destHost' is going to be added to the VM '$destVMName'"
         "-----------------------------------------------------"
-        
+
         add-uniquepcipassthroughdevice $newvm $GPUID $destHost
 
         Start-Sleep -s 5
@@ -2531,8 +2551,8 @@ function main {
         $devname = $device.Name
 
         $devid = $h.backing.Id
-    
-        "-----------------------------------------------------"    
+
+        "-----------------------------------------------------"
         Write-Host -ForeGroundColor Green "[INFO] PCI Device '$devname' with ID: ' $devid ' has been added to the VM '$newvm'`n"
         $outputBox.AppendText("[INFO] PCI Device '$devname' with ID: ' $devid ' has been added to the VM '$newvm'`r`n`n")
         $time = date -Format dd/MM/yy`thh:mm:ss.m
@@ -2548,7 +2568,7 @@ function main {
         $outputBox.AppendText("#################################################################################.`r`n")
         LogWrite "[INFO] $time- VM $newvm cloned with success. Moving to next VM.`n"
         LogWrite "#################################################################################`n"
-        #$outputBox.AppendText("###############  VM $newvm Cloned successfuly. Moving to next VM  ##############`r`n")                                         
+        #$outputBox.AppendText("###############  VM $newvm Cloned successfuly. Moving to next VM  ##############`r`n")
         $outputBox.SelectionStart = $outputBox.Text.Length
         $outputBox.ScrollToCaret()
 
@@ -2556,14 +2576,13 @@ function main {
        }
         "(16) Remove GPU from VM"
        {
-
         # Remove PCI device GPU
         $outputBox.AppendText("[INFO] Removinging GPU PCI card from VM $VMNames...`r`n")
         Write-Host -ForeGroundColor Green "[INFO]Removinging GPU PCI card from VM $VMNames..."
 
         Get-VM $VMName | where { $_.PowerState –eq "PoweredOn" } | Stop-VM –confirm:$false
         Start-Sleep -s 7
-        
+
         foreach ($vm in (get-vm $VMName)) {get-vmresourceconfiguration $vm | set-vmresourceconfiguration -MemReservationMB $vm.MemoryMB}
         get-vm $VMName | get-passthroughdevice | remove-passthroughdevice -Confirm:$false
 
@@ -2586,11 +2605,9 @@ function main {
 
     }
 
-
-
     Write-Host -ForeGroundColor Green "[INFO] Operation for the VM $destVMName Done.`n`n"
     $outputBox.AppendText("[INFO] Operation for the VM $destVMName Done.`r`n")
-    
+
     $i = $i+1
     }
 
@@ -2605,13 +2622,11 @@ function main {
     LogWrite "#################################################################################`n"
     LogWrite "#################################################################################`n"
 
-    }                           
-                     
-}   
+    }
+
+}
 
 #####################  Form Activation  ##########################
 
 $Form.Add_Shown({$Form.Activate()})
 [void] $Form.ShowDialog()                                                         #activating the form
-
-
