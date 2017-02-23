@@ -1206,14 +1206,14 @@ function main {
             $OnVMlist = Get-VMHost $destHost | Get-VM | Where-Object {$_.PowerState -eq "PoweredOn"}
             $OnlineVMcount = $OnVMlist.count
 
-            if ($IdList.Id.Length -eq 4 -and $OnlineVMcount -ge 4)
+            if ($IdList.Id.Length -ge 4 -and $OnlineVMcount -ge 4)
             {
                 Write-Host -ForeGroundColor Yellow "[DEBUG] The ESXi host: $Hosting is full"
                 $outputBox.AppendText("[DEBUG] The ESXi host: $Hosting is full`r`n")
                 LogWrite "[DEBUG] The ESXi host: $Hosting is full`n"
                 continue
             }
-            elseif ($IdList.Id.Length  4 -and $OnlineVMcount -gt 4)
+            elseif ($IdList.Id.Length -lt 4 -and $OnlineVMcount -gt 4)
             {
              # Ths case of having offline VMs with PCI device connected to them
              $OffVMlist = Get-VMHost $destHost | Get-VM | Where-Object {$_.PowerState -eq "PoweredOff"}
@@ -1241,14 +1241,14 @@ function main {
             $GpuConf=get-vmhost $Hosting | get-vm | get-view
             $IdList = $GpuConf.config.hardware.device | ?{$_.Backing -is "VMware.Vim.VirtualPCIPassthroughDeviceBackingInfo"} | Select-Object  -Property @{N="Id";E={$_.Backing.Id}}
 
-            if ($IdList.Id.Length -eq 4 -and $OnlineVMcount -ge 4)
+            if ($IdList.Id.Length -ge 4 -and $OnlineVMcount -ge 4)
             {
                 Write-Host -ForeGroundColor Yellow "[DEBUG] The ESXi host: $Hosting is full"
                 $outputBox.AppendText("[DEBUG] The ESXi host: $Hosting is full`r`n")
                 LogWrite "[DEBUG] The ESXi host: $Hosting is full`n"
                 continue
             }
-            elseif (!($IdList.Id.Length -eq 4) -and $OnlineVMcount -gt 4)
+            elseif ($IdList.Id.Length -lt 4 -and $OnlineVMcount -gt 4)
             {
              # Ths case of having offline VMs with PCI device connected to them
              $OffVMlist = Get-VMHost $destHost | Get-VM | Where-Object {$_.PowerState -eq "PoweredOff"}
