@@ -1206,26 +1206,26 @@ function main {
             $OnVMlist = Get-VMHost $destHost | Get-VM | Where-Object {$_.PowerState -eq "PoweredOn"}
             $OnlineVMcount = $OnVMlist.count
 
-            if ($IdList.Id.Length -ge 4 -and $OnlineVMcount -ge 4)
+            if ($IdList.Id.Length -eq 4)
             {
                 Write-Host -ForeGroundColor Yellow "[DEBUG] The ESXi host: $Hosting is full"
                 $outputBox.AppendText("[DEBUG] The ESXi host: $Hosting is full`r`n")
                 LogWrite "[DEBUG] The ESXi host: $Hosting is full`n"
                 continue
             }
-            elseif ($IdList.Id.Length -lt 4 -and $OnlineVMcount -gt 4)
-            {
-             # Ths case of having offline VMs with PCI device connected to them
-             $OffVMlist = Get-VMHost $destHost | Get-VM | Where-Object {$_.PowerState -eq "PoweredOff"}
-
-             Write-Host -ForeGroundColor Yellow "[DEBUG] Removing PCI device from Offline VMs of ESXi host $destHost..."
-             $outputBox.AppendText("[DEBUG] Removing PCI device from Offline VMs of ESXi host $destHost...`r`n")
-             LogWrite "[DEBUG] Removing PCI device from Offline VMs of ESXi host $destHost...`n"
-             foreach ($v in $OffVMlist)
-             {
-                foreach ($vm in (get-vm $v)) {get-vmresourceconfiguration $vm | set-vmresourceconfiguration -MemReservationMB $vm.MemoryMB}
-                get-vm $v | get-passthroughdevice | remove-passthroughdevice -Confirm:$false
-             }
+            #elseif ($IdList.Id.Length -lt 4 -and $OnlineVMcount -gt 4)
+            #{
+            # # Ths case of having offline VMs with PCI device connected to them
+            # $OffVMlist = Get-VMHost $destHost | Get-VM | Where-Object {$_.PowerState -eq "PoweredOff"}
+            #
+            # Write-Host -ForeGroundColor Yellow "[DEBUG] Removing PCI device from Offline VMs of ESXi host $destHost..."
+            # $outputBox.AppendText("[DEBUG] Removing PCI device from Offline VMs of ESXi host $destHost...`r`n")
+            # LogWrite "[DEBUG] Removing PCI device from Offline VMs of ESXi host $destHost...`n"
+            # foreach ($v in $OffVMlist)
+            # {
+            #    foreach ($vm in (get-vm $v)) {get-vmresourceconfiguration $vm | set-vmresourceconfiguration -MemReservationMB $vm.MemoryMB}
+            #    get-vm $v | get-passthroughdevice | remove-passthroughdevice -Confirm:$false
+            # }
             else
             {
                 $destHost = $Hosting
@@ -1240,28 +1240,30 @@ function main {
             Write-Host -ForeGroundColor Green "[INFO] Testing host $Hosting ..."
             $GpuConf=get-vmhost $Hosting | get-vm | get-view
             $IdList = $GpuConf.config.hardware.device | ?{$_.Backing -is "VMware.Vim.VirtualPCIPassthroughDeviceBackingInfo"} | Select-Object  -Property @{N="Id";E={$_.Backing.Id}}
+            $OnVMlist = Get-VMHost $destHost | Get-VM | Where-Object {$_.PowerState -eq "PoweredOn"}
+            $OnlineVMcount = $OnVMlist.count
 
-            if ($IdList.Id.Length -ge 4 -and $OnlineVMcount -ge 4)
+            if ($IdList.Id.Length -eq 4)
             {
                 Write-Host -ForeGroundColor Yellow "[DEBUG] The ESXi host: $Hosting is full"
                 $outputBox.AppendText("[DEBUG] The ESXi host: $Hosting is full`r`n")
                 LogWrite "[DEBUG] The ESXi host: $Hosting is full`n"
                 continue
             }
-            elseif ($IdList.Id.Length -lt 4 -and $OnlineVMcount -gt 4)
-            {
-             # Ths case of having offline VMs with PCI device connected to them
-             $OffVMlist = Get-VMHost $destHost | Get-VM | Where-Object {$_.PowerState -eq "PoweredOff"}
-
-             Write-Host -ForeGroundColor Yellow "[DEBUG] Removing PCI device from Offline VMs of ESXi host $destHost..."
-             $outputBox.AppendText("[DEBUG] Removing PCI device from Offline VMs of ESXi host $destHost...`r`n")
-             LogWrite "[DEBUG] Removing PCI device from Offline VMs of ESXi host $destHost...`n"
-             foreach ($v in $OffVMlist)
-             {
-                foreach ($vm in (get-vm $v)) {get-vmresourceconfiguration $vm | set-vmresourceconfiguration -MemReservationMB $vm.MemoryMB}
-                get-vm $v | get-passthroughdevice | remove-passthroughdevice -Confirm:$false
-             }
-            }
+            #elseif ($IdList.Id.Length -lt 4 -and $OnlineVMcount -gt 4)
+            #{
+            # # Ths case of having offline VMs with PCI device connected to them
+            # $OffVMlist = Get-VMHost $destHost | Get-VM | Where-Object {$_.PowerState -eq "PoweredOff"}
+            #
+            # Write-Host -ForeGroundColor Yellow "[DEBUG] Removing PCI device from Offline VMs of ESXi host $destHost..."
+            # $outputBox.AppendText("[DEBUG] Removing PCI device from Offline VMs of ESXi host $destHost...`r`n")
+            # LogWrite "[DEBUG] Removing PCI device from Offline VMs of ESXi host $destHost...`n"
+            # foreach ($v in $OffVMlist)
+            # {
+            #    foreach ($vm in (get-vm $v)) {get-vmresourceconfiguration $vm | set-vmresourceconfiguration -MemReservationMB $vm.MemoryMB}
+            #    get-vm $v | get-passthroughdevice | remove-passthroughdevice -Confirm:$false
+            # }
+            #}
             else
             {
                 $destHost = $Hosting
