@@ -1140,7 +1140,7 @@ function main {
     LogWrite "[INFO] $time- Connecting to vCenter Address: $vcAddress."
 
     $j=0
-    $GPUsIdslist= "0000:0a:00.0", "0000:09:00.0", "0000:08:00.0", "0000:07:00.0"
+    #$GPUsIdslist= "0000:0a:00.0", "0000:09:00.0", "0000:08:00.0", "0000:07:00.0"
     $destFolder = "/home/$guestUser/"
 
     $destHostList1 = "hx-vdi-hyp159.ebi.ac.uk", "hx-vdi-hyp160.ebi.ac.uk", "hx-vdi-hyp161.ebi.ac.uk", "hx-vdi-hyp162.ebi.ac.uk", "hx-vdi-hyp163.ebi.ac.uk",
@@ -1203,8 +1203,8 @@ function main {
             Write-Host -ForeGroundColor Yellow "Testing host $Hosting ..."
             $GpuConf=get-vmhost $Hosting | get-vm | get-view
             $IdList = $GpuConf.config.hardware.device | ?{$_.Backing -is "VMware.Vim.VirtualPCIPassthroughDeviceBackingInfo"} | Select-Object  -Property @{N="Id";E={$_.Backing.Id}}
-            $OnVMlist = Get-VMHost $destHost | Get-VM | Where-Object {$_.PowerState -eq "PoweredOn"}
-            $OnlineVMcount = $OnVMlist.count
+            ##$OnVMlist = Get-VMHost $destHost | Get-VM | Where-Object {$_.PowerState -eq "PoweredOn"}
+            #$OnlineVMcount = $OnVMlist.count
 
             if ($IdList.Id.Length -eq 4)
             {
@@ -1240,8 +1240,8 @@ function main {
             Write-Host -ForeGroundColor Green "[INFO] Testing host $Hosting ..."
             $GpuConf=get-vmhost $Hosting | get-vm | get-view
             $IdList = $GpuConf.config.hardware.device | ?{$_.Backing -is "VMware.Vim.VirtualPCIPassthroughDeviceBackingInfo"} | Select-Object  -Property @{N="Id";E={$_.Backing.Id}}
-            $OnVMlist = Get-VMHost $destHost | Get-VM | Where-Object {$_.PowerState -eq "PoweredOn"}
-            $OnlineVMcount = $OnVMlist.count
+            #$OnVMlist = Get-VMHost $destHost | Get-VM | Where-Object {$_.PowerState -eq "PoweredOn"}
+            #$OnlineVMcount = $OnVMlist.count
 
             if ($IdList.Id.Length -eq 4)
             {
@@ -1332,28 +1332,32 @@ function main {
 	    }
         # Add GPU card passthrough
 
+        $ObjHost = Get-EsxCli -VMHost $destHost
+        $GPUsIdslist = $ObjHost.hardware.pci.list("0x300") | Where-Object {$_.ModuleName -eq "pciPassthru"} | select -Property Address
+        [array]::Reverse($GPUsIdslist)
+
         $GpuConf=get-vmhost $destHost | get-vm | get-view
         $IdList = $GpuConf.config.hardware.device | ?{$_.Backing -is "VMware.Vim.VirtualPCIPassthroughDeviceBackingInfo"} | Select-Object  -Property @{N="Id";E={$_.Backing.Id}}
         $SlotLeft = 4 - $IdList.Id.Count
         "-----------------------------------------------------"
-        Write-Host -ForeGroundColor Yellow "[DEBUG] The Host '$destHost' has  '$SlotLeft'  GPU slots left."
-        $outputBox.AppendText("[DEBUG] The Host '$destHost' has  '$SlotLeft'  GPU slots left.`r`n")
+        Write-Host -ForeGroundColor Yellow "[DEBUG] The Host '$destHost' has  # $SlotLeft #  GPU slots left."
+        $outputBox.AppendText("[DEBUG] The Host '$destHost' has  # $SlotLeft #  GPU slots left.`r`n")
         $time = date -Format dd/MM/yy`thh:mm:ss.m
-        LogWrite "[DEBUG] The Host '$destHost' has  '$SlotLeft'  GPU slots left.'"
+        LogWrite "[DEBUG] The Host '$destHost' has  # $SlotLeft #  GPU slots left.'"
         "-----------------------------------------------------"
         foreach ($Idline in $GPUsIdslist)
       {
          if ($IdList -ne $null)
          {
-            if (!($IdList.Id.Contains($Idline)))
+            if (!($IdList.Id.Contains($Idline.Address)))
             {
-                $GPUID = $Idline
+                $GPUID = $Idline.Address
                 #continue
             }
           }
           else
           {
-             $GPUID = $GPUsIdslist[3]
+             $GPUID = $GPUsIdslist[3].Address
           }
       }
         "-----------------------------------------------------"
@@ -1714,7 +1718,7 @@ function main {
     LogWrite "[INFO] $time- Connecting to vCenter Address: $vcAddress."
 
 
-    $GPUsIdslist= "0000:0a:00.0", "0000:09:00.0", "0000:08:00.0", "0000:07:00.0"
+    #$GPUsIdslist= "0000:0a:00.0", "0000:09:00.0", "0000:08:00.0", "0000:07:00.0"
     $destFolder = "/home/$guestUser/"
 
     $destHostList1 = "hx-vdi-hyp159.ebi.ac.uk", "hx-vdi-hyp160.ebi.ac.uk", "hx-vdi-hyp161.ebi.ac.uk", "hx-vdi-hyp162.ebi.ac.uk", "hx-vdi-hyp163.ebi.ac.uk",
@@ -1738,7 +1742,7 @@ function main {
 
     while ($i -le $operationloop)
     {
-        $destVMName = $Org_VMName + "-" + $i.ToString("00")
+        $destVMName = $Org_VMName + "-" + $i.ToString("00")   # + "-"
 
         $j=$j+1
         $VMName = $destVMName
@@ -1833,7 +1837,7 @@ function main {
         LogWrite "[INFO] $time- VM: $VMName deleted."
 
        }
-       "(7). Add PCI Device"
+       "(7). Add GPU PCI Device"
       {
 
         # Add PCi device GPU
@@ -1841,9 +1845,7 @@ function main {
         #$taskShDn =
         Get-VM $VMName | where { $_.PowerState –eq "PoweredOn" } | Stop-VM –confirm:$false
 
-        Start-Sleep -s 7
-
-        $GPUsIdslist= "0000:0a:00.0", "0000:09:00.0", "0000:08:00.0", "0000:07:00.0"
+        #$GPUsIdslist= "0000:0a:00.0", "0000:09:00.0", "0000:08:00.0", "0000:07:00.0"
 
         foreach ($vm in (get-vm $VMName)) {get-vmresourceconfiguration $vm | set-vmresourceconfiguration -MemReservationMB $vm.MemoryMB}
 
@@ -1855,6 +1857,10 @@ function main {
 
         $destHost = $newvm.VMHost.Name
 
+        $ObjHost = Get-EsxCli -VMHost $destHost
+        $GPUsIdslist = $ObjHost.hardware.pci.list("0x300") | Where-Object {$_.ModuleName -eq "pciPassthru"} | select -Property Address
+        [array]::Reverse($GPUsIdslist)
+
         #get VMs from a host
 
         $GpuConf=get-vmhost $destHost | get-vm | get-view
@@ -1864,25 +1870,25 @@ function main {
         $SlotLeft = 4 - $IdList.Id.Count
 
         "-----------------------------------------------------"
-        Write-Host -ForeGroundColor Yellow "[DEBUG] The Host '$destHost' has  '$SlotLeft'  GPU slots left."
-        $outputBox.AppendText("[DEBUG] The Host '$destHost' has  '$SlotLeft'  GPU slots left.`r`n")
+        Write-Host -ForeGroundColor Yellow "[DEBUG] The Host '$destHost' has  # $SlotLeft #  GPU slots left."
+        $outputBox.AppendText("[DEBUG] The Host '$destHost' has  # $SlotLeft #'  GPU slots left.`r`n")
         $time = date -Format dd/MM/yy`thh:mm:ss.m
-        LogWrite "[DEBUG] The Host '$destHost' has  '$SlotLeft'  GPU slots left.'"
+        LogWrite "[DEBUG] The Host '$destHost' has  # $SlotLeft #  GPU slots left.'"
         "-----------------------------------------------------"
 
         foreach ($Idline in $GPUsIdslist)
         {
             if ($IdList -ne $null)
             {
-            if (!($IdList.Id.Contains($Idline)))
+            if (!($IdList.Id.Contains($Idline.Address)))
             {
-                $GPUID = $Idline
+                $GPUID = $Idline.Address
                 #continue
             }
             }
             else
             {
-               $GPUID = $GPUsIdslist[3]
+               $GPUID = $GPUsIdslist[3].Address
             }
         }
 
@@ -2153,11 +2159,12 @@ function main {
         Write-Host -ForeGroundColor Green "#################################################################################`n"
 
       }
+
+################################################################################################################################################################################################################
+################################################################################################################################################################################################################
+
        "(14). Migrate VMs equally between Hosts"
       {
-        $destVMName = $Org_VMName + "-" + $i.ToString("00")
-
-        $j=$j+1
         $VMName = $destVMName
 
         write-host -ForeGroundColor Yellow "`n############ Resources Organisation Nbr: $j   On: $VMName      ##########`n"
@@ -2168,17 +2175,17 @@ function main {
         $destHost = $newvm.VMHost.Name
 
         Get-VM $VMName | where { $_.PowerState –eq "PoweredOn" } | Stop-VM –confirm:$false
-        Start-sleep -s 5
 
-        Write-Host -ForeGroundColor Green "[INFO] Testing the VM current host $destHost..."
+
+        Write-Host -ForeGroundColor Green "[INFO] Testing the VM current host $destHost... `n"
         $GpuConf=get-vmhost $destHost | get-vm | get-view
         $IdList = $GpuConf.config.hardware.device | ?{$_.Backing -is "VMware.Vim.VirtualPCIPassthroughDeviceBackingInfo"} | Select-Object  -Property @{N="Id";E={$_.Backing.Id}}
         $OnVMlist = Get-VMHost $destHost | Get-VM | Where-Object {$_.PowerState -eq "PoweredOn"}
         $OnlineVMcount = $OnVMlist.count
 
-        if ($IdList.Id.Length -eq 4 -and $OnlineVMcount -gt 4)
+        if ($IdList.Id.Length -eq 4 -and $OnlineVMcount -ge 4)
+        # Migarating the VM to a suitable ESXi hosts
         {
-            # Migarating the VM to a suitable ESXi hosts
             Write-Host -ForeGroundColor Yellow "[DEBUG] Current ESXi host: $destHost is full. Migrating VM to an other ESXI Host..."
             $outputBox.AppendText("[DEBUG] Current ESXi host: $destHost is full. Migrating VM to an other ESXI Host...`r`n")
             LogWrite "[DEBUG] Current ESXi host: $destHost is full. Migrating VM to an other ESXI Host...`n"
@@ -2264,16 +2271,16 @@ function main {
             LogWrite "[INFO] The VM $VMName has been migrated. Adding GPU PCI device to it...`n"
 
         }
-        elseif (!($IdList.Id.Length -eq 4 -and $OnlineVMcount -gt 4))
+        elseif ($IdList.Id.Length -lt 4)
+        # Nothing to do, The VM stays in the current host and then gets a GPU PCI devie added to it
         {
-            # Nothing happenes, The VM stays in teh current host and then gets a GPU PCI devie added to it
-            Write-Host -ForeGroundColor Green "[INFO] Current ESXi host: $destHost is alright. Adding GPU PCI device to the VM $VMName..."
+            Write-Host -ForeGroundColor Green "[INFO] Current ESXi host: $destHost is good to host the VM. Adding GPU PCI device to the VM $VMName..."
             $outputBox.AppendText("[INFO] Current ESXi host: $destHost is alright. Adding GPU PCI device to the VM $VMName...`r`n")
             LogWrite "[INFO] Current ESXi host: $destHost is alright. Adding GPU PCI device to the VM $VMName...`n"
         }
-        elseif (!($IdList.Id.Length -eq 4) -and $OnlineVMcount -gt 4)
+        elseif ($IdList.Id.Length -ge 4 -and $OnlineVMcount -lt 4)
+        # Ths case of having offline VMs with PCI device connected to them
         {
-         # Ths case of having offline VMs with PCI device connected to them
          $OffVMlist = Get-VMHost $destHost | Get-VM | Where-Object {$_.PowerState -eq "PoweredOff"}
 
          Write-Host -ForeGroundColor Yellow "[DEBUG] Removing PCI device from Offline VMs of ESXi host $destHost..."
@@ -2286,8 +2293,8 @@ function main {
          }
         }
         else
+        # Listing the extra VMs using resources powered on in the hosts
         {
-         # Listing the extra VMs using resources powerd on in the hosts
          Write-Host -ForeGroundColor Yellow "[DEBUG] There is Extra VMs Powered on in the host $destHost :"
          $outputBox.AppendText("[DEBUG] Removing PCI device from Offline VMs of ESXi host $destHost :`r`n")
          LogWrite "[DEBUG] Removing PCI device from Offline VMs of ESXi host $destHost :`n"
@@ -2304,24 +2311,24 @@ function main {
         $IdList = $GpuConf.config.hardware.device | ?{$_.Backing -is "VMware.Vim.VirtualPCIPassthroughDeviceBackingInfo"} | Select-Object  -Property @{N="Id";E={$_.Backing.Id}}
         $SlotLeft = 4 - $IdList.Id.Count
         "-----------------------------------------------------"
-        Write-Host -ForeGroundColor Yellow "[DEBUG] The Host '$destHost' has  '$SlotLeft'  GPU slots left."
-        $outputBox.AppendText("[DEBUG] The Host '$destHost' has  '$SlotLeft'  GPU slots left.`r`n")
+        Write-Host -ForeGroundColor Yellow "[DEBUG] The Host '$destHost' has  # $SlotLeft #  GPU slots left."
+        $outputBox.AppendText("[DEBUG] The Host '$destHost' has  # $SlotLeft #  GPU slots left.`r`n")
         $time = date -Format dd/MM/yy`thh:mm:ss.m
-        LogWrite "[DEBUG] The Host '$destHost' has  '$SlotLeft'  GPU slots left.'"
+        LogWrite "[DEBUG] The Host '$destHost' has  # $SlotLeft #  GPU slots left.'"
         "-----------------------------------------------------"
         foreach ($Idline in $GPUsIdslist)
       {
          if ($IdList -ne $null)
          {
-            if (!($IdList.Id.Contains($Idline)))
+            if (!($IdList.Id.Contains($Idline.Address)))
             {
-                $GPUID = $Idline
+                $GPUID = $Idline.Address
                 #continue
             }
           }
           else
           {
-             $GPUID = $GPUsIdslist[3]
+             $GPUID = $GPUsIdslist[3].Address
           }
       }
         "-----------------------------------------------------"
@@ -2361,13 +2368,14 @@ function main {
         LogWrite "[INFO] $time- VM $VMNames Resources organized. Moving to next one.`n"
         LogWrite "#################################################################################`n"
 
+
        }
+################################################################################################################################################################################################################
+################################################################################################################################################################################################################
+
         "(15). Clone VMs for an Inactive pool"
        {
 
-        $destVMName = $Org_VMName + "-" + $i.ToString("00")
-
-        $j=$j+1
         $VMName = $destVMName
 
         write-host -ForeGroundColor Yellow "`n############ Clone Nbr: $j   On: $VMName      ##########`n"
@@ -2513,24 +2521,24 @@ function main {
         $IdList = $GpuConf.config.hardware.device | ?{$_.Backing -is "VMware.Vim.VirtualPCIPassthroughDeviceBackingInfo"} | Select-Object  -Property @{N="Id";E={$_.Backing.Id}}
         $SlotLeft = 4 - $IdList.Id.Count
         "-----------------------------------------------------"
-        Write-Host -ForeGroundColor Yellow "[DEBUG] The Host '$destHost' has  '$SlotLeft'  GPU slots left."
-        $outputBox.AppendText("[DEBUG] The Host '$destHost' has  '$SlotLeft'  GPU slots left.`r`n")
+        Write-Host -ForeGroundColor Yellow "[DEBUG] The Host '$destHost' has  # $SlotLeft #  GPU slots left."
+        $outputBox.AppendText("[DEBUG] The Host '$destHost' has  # $SlotLeft #  GPU slots left.`r`n")
         $time = date -Format dd/MM/yy`thh:mm:ss.m
-        LogWrite "[DEBUG] The Host '$destHost' has  '$SlotLeft'  GPU slots left.'"
+        LogWrite "[DEBUG] The Host '$destHost' has  # $SlotLeft #  GPU slots left.'"
         "-----------------------------------------------------"
         foreach ($Idline in $GPUsIdslist)
       {
          if ($IdList -ne $null)
          {
-            if (!($IdList.Id.Contains($Idline)))
+            if (!($IdList.Id.Contains($Idline.Address)))
             {
-                $GPUID = $Idline
+                $GPUID = $Idline.Address
                 #continue
             }
           }
           else
           {
-             $GPUID = $GPUsIdslist[3]
+             $GPUID = $GPUsIdslist[3].Address
           }
       }
         "-----------------------------------------------------"
@@ -2579,17 +2587,16 @@ function main {
         "(16) Remove GPU from VM"
        {
         # Remove PCI device GPU
-        $outputBox.AppendText("[INFO] Removinging GPU PCI card from VM $VMNames...`r`n")
-        Write-Host -ForeGroundColor Green "[INFO]Removinging GPU PCI card from VM $VMNames..."
+        $outputBox.AppendText("[INFO] Removinging GPU PCI card from VM $VMName...`r`n")
+        Write-Host -ForeGroundColor Green "[INFO] Removinging GPU PCI card from VM $VMName..."
 
         Get-VM $VMName | where { $_.PowerState –eq "PoweredOn" } | Stop-VM –confirm:$false
-        Start-Sleep -s 7
 
-        foreach ($vm in (get-vm $VMName)) {get-vmresourceconfiguration $vm | set-vmresourceconfiguration -MemReservationMB $vm.MemoryMB}
+        #foreach ($vm in (get-vm $VMName)) {get-vmresourceconfiguration $vm | set-vmresourceconfiguration -MemReservationMB $vm.MemoryMB}
         get-vm $VMName | get-passthroughdevice | remove-passthroughdevice -Confirm:$false
 
-        $outputBox.AppendText("[INFO] VM $VMNames has its GPU PCI card removed and it is kept shutdown.`r`n")
-        Write-Host -ForeGroundColor Green "[INFO] VM $VMNames has its GPU PCI card removed and it is kept shutdown."
+        $outputBox.AppendText("[INFO] VM $VMName has its GPU PCI card removed and it is kept shutdown.`r`n")
+        Write-Host -ForeGroundColor Green "[INFO] VM $VMName has its GPU PCI card removed and it is kept shutdown."
         $outputBox.AppendText("#################################################################################`r`n`r`n")
         Write-Host -ForeGroundColor Green "#################################################################################`n"
         $time = date -Format hh:mm:ss.ms
