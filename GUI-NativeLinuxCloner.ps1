@@ -2176,15 +2176,18 @@ function main {
 
         Get-VM $VMName | where { $_.PowerState –eq "PoweredOn" } | Stop-VM –confirm:$false
 
-
         Write-Host -ForeGroundColor Green "[INFO] Testing the VM current host $destHost... `n"
         $GpuConf=get-vmhost $destHost | get-vm | get-view
         $IdList = $GpuConf.config.hardware.device | ?{$_.Backing -is "VMware.Vim.VirtualPCIPassthroughDeviceBackingInfo"} | Select-Object  -Property @{N="Id";E={$_.Backing.Id}}
         $OnVMlist = Get-VMHost $destHost | Get-VM | Where-Object {$_.PowerState -eq "PoweredOn"}
         $OnlineVMcount = $OnVMlist.count
 
+
+
+
+
         if ($IdList.Id.Length -eq 4 -and $OnlineVMcount -ge 4)
-        # Migarating the VM to a suitable ESXi hosts
+######################################### Migration !!!!!! Migarating the VM to a suitable ESXi hosts
         {
             Write-Host -ForeGroundColor Yellow "[DEBUG] Current ESXi host: $destHost is full. Migrating VM to an other ESXI Host..."
             $outputBox.AppendText("[DEBUG] Current ESXi host: $destHost is full. Migrating VM to an other ESXI Host...`r`n")
@@ -2200,7 +2203,7 @@ function main {
                 $GpuConf=get-vmhost $Hosting | get-vm | get-view
                 $IdList = $GpuConf.config.hardware.device | ?{$_.Backing -is "VMware.Vim.VirtualPCIPassthroughDeviceBackingInfo"} | Select-Object  -Property @{N="Id";E={$_.Backing.Id}}
 
-                if ($IdList.Id.Length -eq 4)
+                if ($IdList.Id.Length -ge 4)
                 {
                     Write-Host -ForeGroundColor Yellow "[DEBUG] The ESXi host: $Hosting is full"
                     $outputBox.AppendText("[DEBUG] The ESXi host: $Hosting is full`r`n")
@@ -2225,7 +2228,7 @@ function main {
                 $GpuConf=get-vmhost $Hosting | get-vm | get-view
                 $IdList = $GpuConf.config.hardware.device | ?{$_.Backing -is "VMware.Vim.VirtualPCIPassthroughDeviceBackingInfo"} | Select-Object  -Property @{N="Id";E={$_.Backing.Id}}
 
-                if ($IdList.Id.Length -eq 4)
+                if ($IdList.Id.Length -ge 4)
                 {
                     Write-Host -ForeGroundColor Yellow "[DEBUG] The ESXi host: $Hosting is full"
                     $outputBox.AppendText("[DEBUG] The ESXi host: $Hosting is full`r`n")
@@ -2266,20 +2269,33 @@ function main {
             # VM Migration happens now
             Get-VM $VMName | Move-VM -Destination (Get-VMHost $destHost)
 
-            Write-Host -ForeGroundColor Green "[INFO] The VM $VMName has been migrated. Adding GPU PCI device to it..."
-            $outputBox.AppendText("[INFO] The VM $VMName has been migrated. Adding GPU PCI device to it...`r`n")
-            LogWrite "[INFO] The VM $VMName has been migrated. Adding GPU PCI device to it...`n"
+            Write-Host -ForeGroundColor Green "[INFO] The VM $VMName has been migrated. Adding PCI device..."
+            $outputBox.AppendText("[INFO] The VM $VMName has been migrated. Adding PCI device...`r`n")
+            LogWrite "[INFO] The VM $VMName has been migrated. Adding PCI device...`n"
 
         }
-        elseif ($IdList.Id.Length -lt 4)
-        # Nothing to do, The VM stays in the current host and then gets a GPU PCI devie added to it
+
+
+
+
+
+
+        elseif ($IdList.Id.Length -lt 4 -and $OnlineVMcount -lt 4 )
+######################################### GOOD !! Very good condusion to add a PCI device. The VM stays in the current host and then gets a GPU PCI devie added to it
         {
             Write-Host -ForeGroundColor Green "[INFO] Current ESXi host: $destHost is good to host the VM. Adding GPU PCI device to the VM $VMName..."
-            $outputBox.AppendText("[INFO] Current ESXi host: $destHost is alright. Adding GPU PCI device to the VM $VMName...`r`n")
-            LogWrite "[INFO] Current ESXi host: $destHost is alright. Adding GPU PCI device to the VM $VMName...`n"
+            $outputBox.AppendText("[INFO] Current ESXi host: $destHost is good to host the VM. Adding GPU PCI device to the VM $VMName...`r`n")
+            LogWrite "[INFO] Current ESXi host: $destHost is good to host the VM. Adding GPU PCI device to the VM $VMName...`n"
         }
+        
+        
+        
+        
+        
+        
+        
         elseif ($IdList.Id.Length -ge 4 -and $OnlineVMcount -lt 4)
-        # Ths case of having offline VMs with PCI device connected to them
+######################################### Something Wrong!!! The case of having offline VMs with PCI device connected to them
         {
          $OffVMlist = Get-VMHost $destHost | Get-VM | Where-Object {$_.PowerState -eq "PoweredOff"}
 
@@ -2291,9 +2307,21 @@ function main {
             foreach ($vm in (get-vm $v)) {get-vmresourceconfiguration $vm | set-vmresourceconfiguration -MemReservationMB $vm.MemoryMB}
             get-vm $v | get-passthroughdevice | remove-passthroughdevice -Confirm:$false
          }
+
+         # Trying again while the fix beening applied
+         Write-Host -ForeGroundColor Green "[INFO] Trying again while the fix has beening applied..."
+         $outputBox.AppendText("[INFO] Trying again while the fix has beening applied...`r`n")
+         LogWrite "[INFO] Trying again while the fix has beening applied...`n"
+         continue
         }
+
+
+
+
+
+
         else
-        # Listing the extra VMs using resources powered on in the hosts
+######################################### Listing the extra VMs using resources powered on in the hosts
         {
          Write-Host -ForeGroundColor Yellow "[DEBUG] There is Extra VMs Powered on in the host $destHost :"
          $outputBox.AppendText("[DEBUG] Removing PCI device from Offline VMs of ESXi host $destHost :`r`n")
@@ -2306,7 +2334,13 @@ function main {
          $outputBox.AppendText(($OnVMNAmelist | Format-Table | Out-String))
          LogWrite ($OnVMNAmelist | Format-Table | Out-String)
         }
-        # Adding GPU PCI card via passthrough
+
+
+
+
+
+
+######################################### Adding GPU PCI card via passthrough
         $GpuConf=get-vmhost $destHost | get-vm | get-view
         $IdList = $GpuConf.config.hardware.device | ?{$_.Backing -is "VMware.Vim.VirtualPCIPassthroughDeviceBackingInfo"} | Select-Object  -Property @{N="Id";E={$_.Backing.Id}}
         $SlotLeft = 4 - $IdList.Id.Count
@@ -2356,7 +2390,12 @@ function main {
         "-----------------------------------------------------"
         foreach ($vm in (get-vm $newvm)) {get-vmresourceconfiguration $vm | set-vmresourceconfiguration -MemReservationMB $vm.MemoryMB}
 
-        # Starting the VM To not confuse it for an offline VM holding a PCI device
+
+
+
+
+
+######################################### Starting the VM to not confuse it for an offline VM holding a PCI device
         Start-sleep -s 3
         Start-VM $VMName
         Start-sleep -s 5
@@ -2418,7 +2457,7 @@ function main {
             $GpuConf=get-vmhost $Hosting | get-vm | get-view
             $IdList = $GpuConf.config.hardware.device | ?{$_.Backing -is "VMware.Vim.VirtualPCIPassthroughDeviceBackingInfo"} | Select-Object  -Property @{N="Id";E={$_.Backing.Id}}
 
-            if ($IdList.Id.Length -eq 4)
+            if ($IdList.Id.Length -ge 4)
             {
                 Write-Host -ForeGroundColor Yellow "[DEBUG] The ESXi host: $Hosting is full"
                 $outputBox.AppendText("[DEBUG] The ESXi host: $Hosting is full`r`n")
@@ -2439,7 +2478,7 @@ function main {
             Write-Host -ForeGroundColor Green "[INFO] Testing host $Hosting ..."
             $GpuConf=get-vmhost $Hosting | get-vm | get-view
             $IdList = $GpuConf.config.hardware.device | ?{$_.Backing -is "VMware.Vim.VirtualPCIPassthroughDeviceBackingInfo"} | Select-Object  -Property @{N="Id";E={$_.Backing.Id}}
-            if ($IdList.Id.Length -eq 4)
+            if ($IdList.Id.Length -ge 4)
             {
                 Write-Host -ForeGroundColor Yellow "[DEBUG] The ESXi host: $Hosting is full"
                 $outputBox.AppendText("[DEBUG] The ESXi host: $Hosting is full`r`n")
