@@ -5,7 +5,7 @@ This script should be preffably executed via the VMware vSphere PowerCLI Termina
 
 There is a lot of personilized entries that has been filled in for the original environment. They maybe need to be updated to reflect alternative setup.
 
-The Script also support other operations we found very usuful when runnign VMware Horizon pool:
+The Script also support other operations we found very usuful when running VMware Horizon pools:
 
 1) Power On
 
