@@ -1,11 +1,11 @@
 # VMware-GUI-Native-Linux-Cloner
 A PowerShell script that help with the Native Linux VM deployment (Ubuntu) on a VMware Horizon environment.
 
-This script should be preffably executed via the VMware vSphere PowerCLI Terminal (Been Tested on VMware vSphere PowerCLI 5.8 Release1).
+This script should be preferably executed via the VMware vSphere PowerCLI Terminal (Been Tested on VMware vSphere PowerCLI 5.8 Release1).
 
-There is a lot of personilized entries that has been filled in for the original environment. They maybe need to be updated to reflect alternative setup.
+There is a lot of personalized entries that has been filled in for the original environment. They maybe need to be updated to reflect alternative setup.
 
-The Script also support other operations we found very usuful when running VMware Horizon pools:
+The Script also support other operations we found very useful when running VMware Horizon pools:
 
 1) Power On
 
@@ -45,15 +45,15 @@ The Script also support other operations we found very usuful when running VMwar
 
 1) Fill in the Form 
 
-Mainly: the Clones Name and Accept the licence. This does enable teh execution of most of the operations. To do a deployment, all the field must be filled and a Horizon Agnet must be selected.
+Mainly: the Clones Name and Accept the licence. This does enable the execution of most of the operations. To do a deployment, all the field must be filled and a Horizon Agent must be selected.
 
-2) Click the Deployemtn button or click the Operation button and choose an option.
+2) Click the Deployment button or click the Operation button and choose an option.
 
 3) Wait for it to finish
 
-You can watch the script working on the PowerCLI screen or in the application display output text, also you can alwsy open the logfile. 
+You can watch the script working on the PowerCLI screen or in the application display output text, also you can always open the logfile. 
 
-PS: Our timing for a propper deplyment of 32 VMs was done in 32min.
+PS: Our timing for a proper deployment of 32 VMs is 32 mins.
 
 #Contact
 alibi@ebi.ac.uk
