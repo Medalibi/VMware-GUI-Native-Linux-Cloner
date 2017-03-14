@@ -39,16 +39,18 @@ The Script also support other operations we found very usuful when running VMwar
 
 16) Remove GPU from VM
 
-17) Run a Linux Command
+17) Run a Linux Command (Still under construction, Or it is available for something else. VMs are easier and better managed using Ansible)
 
 #Usage
 
 1) Fill in the Form 
+
 Mainly: the Clones Name and Accept the licence. This does enable teh execution of most of the operations. To do a deployment, all the field must be filled and a Horizon Agnet must be selected.
 
 2) Click the Deployemtn button or click the Operation button and choose an option.
 
 3) Wait for it to finish
+
 You can watch the script working on the PowerCLI screen or in the application display output text, also you can alwsy open the logfile. 
 
 PS: Our timing for a propper deplyment of 32 VMs was done in 32min.
