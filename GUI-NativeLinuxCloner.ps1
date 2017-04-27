@@ -240,7 +240,7 @@ $VMName_InputBox.Location = New-Object System.Drawing.Size(15,25)
 $VMName_InputBox.Size = New-Object System.Drawing.Size(150,50)
 $VMName_InputBox.TabIndex = 2
 $VMName_InputBox.AutoCompleteCustomSource.AddRange(("EMBOMetagenomicVM", "IntroNGSVM", "DataVisialVM", "EMBOMetabolomicsVM", "GenomicMedVM", "PrimersVM", "IntegrativeOmicsVM",
-        "ubuntu1404VM", "ProteomicsVM", "BioExcelVM", "GenMedVM", "IntOmicsVM", "OmicsVM", "WTACVM", "IncilicoVM", "SteamCellVM"));
+        "ubuntu1404VM", "ProteomicsVM", "BioExcelVM", "GenMedVM", "IntOmicsVM", "OmicsVM", "WTACVM", "IncilicoVM", "SteamCellVM", "TestVM", "LinuxTestVM", "UbuntuVM"));
 $VMName_InputBox.AutoCompleteMode = [System.Windows.Forms.AutoCompleteMode]::SuggestAppend;
 $VMName_InputBox.AutoCompleteSource = [System.Windows.Forms.AutoCompleteSource]::CustomSource;
 $VMName_groupBox.Controls.Add($VMName_InputBox)
@@ -260,7 +260,7 @@ $Par_VMName_InputBox.Location = New-Object System.Drawing.Size(15,25)
 $Par_VMName_InputBox.Size = New-Object System.Drawing.Size(150,50)
 $Par_VMName_InputBox.TabIndex = 3
 $Par_VMName_InputBox.AutoCompleteCustomSource.AddRange(("EMBOMetagenomicOct17", "IntroNGSApr17", "DataVisJan17", "EMBOMetabolomicsFeb17", "GenomicMedFeb17",
-"PrimersJan17", "ubuntu1404", "ProteomicsJan17", "BioExelMay16", "IntegrativeOmicsFeb17"));
+"PrimersJan17", "ubuntu1404", "ProteomicsJan17", "BioExelMay16", "IntegrativeOmicsFeb17", "ubuntu1604", "Ubuntu1604"));
 $Par_VMName_InputBox.AutoCompleteMode = [System.Windows.Forms.AutoCompleteMode]::SuggestAppend;
 $Par_VMName_InputBox.AutoCompleteSource = [System.Windows.Forms.AutoCompleteSource]::CustomSource;
 $Par_VMName_groupBox.Controls.Add($Par_VMName_InputBox)
@@ -323,8 +323,8 @@ $spec_InputBox = New-Object System.Windows.Forms.TextBox
 $spec_InputBox.Location = New-Object System.Drawing.Size(15,25)
 $spec_InputBox.Size = New-Object System.Drawing.Size(150,50)
 $spec_InputBox.TabIndex = 6
-$spec_InputBox.Text = "NativeUbuntu"
-$spec_InputBox.AutoCompleteCustomSource.AddRange(("Windows7", "Windows10", "NativeUbuntu"));
+$spec_InputBox.Text = "ubuntu1604"
+$spec_InputBox.AutoCompleteCustomSource.AddRange(("Windows7", "Windows10", "NativeUbuntu", "ubuntu1404", "ubuntu1604"));
 $spec_InputBox.AutoCompleteMode = [System.Windows.Forms.AutoCompleteMode]::SuggestAppend;
 $spec_InputBox.AutoCompleteSource = [System.Windows.Forms.AutoCompleteSource]::CustomSource;
 $spec_groupBox.Controls.Add($spec_InputBox)
@@ -416,9 +416,9 @@ $broAdd_InputBox = New-Object System.Windows.Forms.TextBox
 $broAdd_InputBox.Location = New-Object System.Drawing.Size(15,43)
 $broAdd_InputBox.Size = New-Object System.Drawing.Size(210,50)
 $broAdd_InputBox.TabIndex = 10
-$broAdd_InputBox.Text = "broker7test.courses.ebi.ac.uk"
+$broAdd_InputBox.Text = "broker1.courses.ebi.ac.uk"
 $broAdd_InputBox.AutoCompleteCustomSource.AddRange(("intsecurity.courses.ebi.ac.uk", "broker.courses.ebi.ac.uk", "broker7test.courses.ebi.ac.uk",
- "broker2.courses.ebi.ac.uk", "broker7.courses.ebi.ac.uk"));
+ "broker2.courses.ebi.ac.uk", "broker7.courses.ebi.ac.uk", "broker1.courses.ebi.ac.uk", "extsecurity.courses.ebi.ac.uk"));
 $broAdd_InputBox.AutoCompleteMode = [System.Windows.Forms.AutoCompleteMode]::SuggestAppend;
 $broAdd_InputBox.AutoCompleteSource =[System.Windows.Forms.AutoCompleteSource]::CustomSource;
 $broker_groupBox.Controls.Add($broAdd_InputBox)
@@ -500,7 +500,7 @@ $vcAdd_InputBox.Location = New-Object System.Drawing.Size(15,43)
 $vcAdd_InputBox.Size = New-Object System.Drawing.Size(210,50)
 $vcAdd_InputBox.TabIndex = 14
 $vcAdd_InputBox.Text = "vcenter.courses.ebi.ac.uk"
-$vcAdd_InputBox.AutoCompleteCustomSource.AddRange(("vcenter.courses.ebi.ac.uk", "vcenter2.courses.ebi.ac.uk", "vcenter.ebi.ac.uk"));
+$vcAdd_InputBox.AutoCompleteCustomSource.AddRange(("vcenter.courses.ebi.ac.uk", "vcenter2.courses.ebi.ac.uk", "vcenter.ebi.ac.uk", "testvcenter.courses.ebi.ac.uk"));
 $vcAdd_InputBox.AutoCompleteMode = [System.Windows.Forms.AutoCompleteMode]::SuggestAppend;
 $vcAdd_InputBox.AutoCompleteSource =[System.Windows.Forms.AutoCompleteSource]::CustomSource;
 $vcenter_groupBox.Controls.Add($vcAdd_InputBox)
@@ -1145,7 +1145,7 @@ function main {
 
     $destHostList1 = "hx-vdi-hyp159.ebi.ac.uk", "hx-vdi-hyp160.ebi.ac.uk", "hx-vdi-hyp161.ebi.ac.uk", "hx-vdi-hyp162.ebi.ac.uk", "hx-vdi-hyp163.ebi.ac.uk",
      "hx-vdi-hyp164.ebi.ac.uk", "hx-vdi-hyp165.ebi.ac.uk", "hx-vdi-hyp166.ebi.ac.uk", "hx-vdi-hyp167.ebi.ac.uk", "hx-vdi-hyp168.ebi.ac.uk", "hx-vdi-hyp169.ebi.ac.uk",
-     "hx-vdi-hyp170.ebi.ac.uk", "hx-vdi-hyp171.ebi.ac.uk", "hx-vdi-hyp172.ebi.ac.uk", "hx-vdi-hyp173.ebi.ac.uk", "hx-vdi-hyp174.ebi.ac.uk"
+     "hx-vdi-hyp170.ebi.ac.uk", "hx-vdi-hyp171.ebi.ac.uk", "hx-vdi-hyp172.ebi.ac.uk", "hx-vdi-hyp173.ebi.ac.uk", "hx-vdi-hyp174.ebi.ac.uk"      
 
     $destHostList2 = "hx-vdi-hyp174.ebi.ac.uk", "hx-vdi-hyp173.ebi.ac.uk", "hx-vdi-hyp172.ebi.ac.uk", "hx-vdi-hyp171.ebi.ac.uk", "hx-vdi-hyp170.ebi.ac.uk",
       "hx-vdi-hyp169.ebi.ac.uk", "hx-vdi-hyp168.ebi.ac.uk", "hx-vdi-hyp167.ebi.ac.uk", "hx-vdi-hyp166.ebi.ac.uk", "hx-vdi-hyp165.ebi.ac.uk",
@@ -1426,7 +1426,7 @@ function main {
         $j=0
         $i=1
 
-    while ($i -le $deploymentloop)
+    while ($false) #($i -le $deploymentloop)     ############# Disabling Horizon Agent installation. It is now performed via an Ansible script (faster)
     {
         $destVMName = $Org_VMName + "-" + $i.ToString("00")
 
@@ -1485,17 +1485,17 @@ function main {
         LogWrite "[INFO] $time- Configuring VM $newvm to install Horizon Agent."
 
         #Remove old installation and configuration folders
-        $cmd = "sudo /usr/lib/vmware/viewagent/bin/uninstall_viewagent.sh; sudo rm /etc/vmware/viewagent-conf*; sudo rm /etc/vmware/viewagent-machine*;  sudo rm -r /etc/vmware/ssl; sudo rm -r /etc/vmware/jms; sudo rm -r $destFolder/VMware-*-linux-*"
-        Write-Host -ForeGroundColor Yellow "[DEBUG] Uninstall old view agent and removing of old configuration."
-        $outputBox.AppendText("[DEBUG] Uninstall old view agent and removing of old configuration.`r`n")
-        RunCmdViaSSH -VM_Name $newvm -User $guestUser -Password $guestPassword -Cmd $cmd
+        #$cmd = "sudo /usr/lib/vmware/viewagent/bin/uninstall_viewagent.sh; sudo rm /etc/vmware/viewagent-conf*; sudo rm /etc/vmware/viewagent-machine*;  sudo rm -r /etc/vmware/ssl; sudo rm -r /etc/vmware/jms; sudo rm -r $destFolder/VMware-*-linux-*"
+        #Write-Host -ForeGroundColor Yellow "[DEBUG] Uninstall old view agent and removing of old configuration."
+        #$outputBox.AppendText("[DEBUG] Uninstall old view agent and removing of old configuration.`r`n")
+        #RunCmdViaSSH -VM_Name $newvm -User $guestUser -Password $guestPassword -Cmd $cmd
 
         #Configure Hostname for the VM
-        $cmd = "sudo chmod 777  " + $destFolder + "hostnamer.sh; sudo " + $destFolder + "hostnamer.sh $VMName"
-        Write-Host -ForeGroundColor Green "[INFO] VM $VMName hostname configuration."
-        $outputBox.AppendText("[INFO] VM $VMName hostname configuration.`r`n")
-        UploadFileViaSSH -VM_Name $newvm -User $guestUser -Password $guestPassword -LocalPath ".\hostnamer.sh" -DestPath $destFolder
-        RunCmdViaSSH -VM_Name $newvm -User $guestUser -Password $guestPassword -Cmd $cmd
+        #$cmd = "sudo chmod 777  " + $destFolder + "hostnamer.sh; sudo " + $destFolder + "hostnamer.sh $VMName"
+        #Write-Host -ForeGroundColor Green "[INFO] VM $VMName hostname configuration."
+        #$outputBox.AppendText("[INFO] VM $VMName hostname configuration.`r`n")
+        #UploadFileViaSSH -VM_Name $newvm -User $guestUser -Password $guestPassword -LocalPath ".\hostnamer.sh" -DestPath $destFolder
+        #RunCmdViaSSH -VM_Name $newvm -User $guestUser -Password $guestPassword -Cmd $cmd
 
         #Upload installer tar ball to Linux VM
         $time = date -Format dd/MM/yy`thh:mm:ss.m
@@ -1505,15 +1505,15 @@ function main {
         UploadFileViaSSH -VM_Name $newvm -User $guestUser -Password $guestPassword -LocalPath $agentInstaller -DestPath $destFolder
 
         #Extract the installer
-        Write-Host -ForeGroundColor Yellow "$newvm : Extract the installer and start the installation"
-        $cmd = "tar -xvf VMware-*-linux-*.tar*"
+        Write-Host -ForeGroundColor Yellow "$newvm : Extract the installer and install VHCI"
+        $cmd = "tar -xvf VMware-*-linux-*.tar*; cd /usr/local/vhci-hcd-1.15; sudo  make; sudo make install"
         Write-Host -ForeGroundColor Yellow "Run cmd '$cmd' in VM '$newvm' with user '$guestUser'"
         $taroutput = RunCmdViaSSH -VM_Name $newvm -User $guestUser -Password $guestPassword -Cmd $cmd
 
         $time = date -Format dd/MM/yy`thh:mm:ss.m
         LogWrite "[INFO] $time- Start the installation and registration to the Horizon connection server.`n"
         # Start the installation and registration to the Horizon connection server
-        $cmd = "cd VMware-*-linux* && sudo ./install_viewagent.sh -r yes -A yes -n $newvm -b $brokerAddress -d $domainName -u $brokerAdminName -p $brokerAdminPassword"
+        $cmd = "cd VMware-*-linux* && sudo ./install_viewagent.sh -r yes -a yes -A yes $newvm -b $brokerAddress -d $domainName -u $brokerAdminName -p $brokerAdminPassword"
         Write-Host -ForeGroundColor Yellow "[INFO] Run the Horizon agent installation and registration with VM name '$newvm' using the user '$guestUser'."
         $outputBox.AppendText("[INFO] Run the Horizon agent installation and registration with VM name '$newvm' using the user '$guestUser'..`r`n")
         RunCmdViaSSH -VM_Name $newvm -User $guestUser -Password $guestPassword -Cmd $cmd
@@ -1950,7 +1950,7 @@ function main {
        {
         $destVMName = $Org_VMName + "-" + $i.ToString("00")
 
-        $j=$j+1
+        
         $VMName = $destVMName
         $newvm = Get-vm $VMName
         Get-VM $VMName | where { $_.PowerState –eq "PoweredOff" } | Start-VM -Confirm:$false
@@ -2007,17 +2007,17 @@ function main {
         LogWrite "[INFO] $time- Configuring VM $newvm to install Horizon Agent."
 
         #Remove old installation and configuration folders
-        $cmd = "sudo /usr/lib/vmware/viewagent/bin/uninstall_viewagent.sh; sudo rm /etc/vmware/viewagent-conf*; sudo rm /etc/vmware/viewagent-machine*;  sudo rm -r /etc/vmware/ssl; sudo rm -r /etc/vmware/jms; sudo rm -r $destFolder/VMware-*-linux-*"
-        Write-Host -ForeGroundColor Yellow "[DEBUG] Uninstall old view agent and removing of old configuration."
-        $outputBox.AppendText("[DEBUG] Uninstall old view agent and removing of old configuration.`r`n")
-        RunCmdViaSSH -VM_Name $newvm -User $guestUser -Password $guestPassword -Cmd $cmd
+        #$cmd = "sudo /usr/lib/vmware/viewagent/bin/uninstall_viewagent.sh; sudo rm /etc/vmware/viewagent-conf*; sudo rm /etc/vmware/viewagent-machine*;  sudo rm -r /etc/vmware/ssl; sudo rm -r /etc/vmware/jms; sudo rm -r $destFolder/VMware-*-linux-*"
+        #Write-Host -ForeGroundColor Yellow "[DEBUG] Uninstall old view agent and removing of old configuration."
+        #$outputBox.AppendText("[DEBUG] Uninstall old view agent and removing of old configuration.`r`n")
+        #RunCmdViaSSH -VM_Name $newvm -User $guestUser -Password $guestPassword -Cmd $cmd
 
         #Configure Hostname for the VM
-        $cmd = "sudo chmod 777  " + $destFolder + "hostnamer.sh; sudo " + $destFolder + "hostnamer.sh $VMName"
-        Write-Host -ForeGroundColor Green "[INFO] VM $VMName hostname configuration."
-        $outputBox.AppendText("[INFO] VM $VMName hostname configuration.`r`n")
-        UploadFileViaSSH -VM_Name $newvm -User $guestUser -Password $guestPassword -LocalPath ".\hostnamer.sh" -DestPath $destFolder
-        RunCmdViaSSH -VM_Name $newvm -User $guestUser -Password $guestPassword -Cmd $cmd
+        #$cmd = "sudo chmod 777  " + $destFolder + "hostnamer.sh; sudo " + $destFolder + "hostnamer.sh $VMName"
+        #Write-Host -ForeGroundColor Green "[INFO] VM $VMName hostname configuration."
+        #$outputBox.AppendText("[INFO] VM $VMName hostname configuration.`r`n")
+        #UploadFileViaSSH -VM_Name $newvm -User $guestUser -Password $guestPassword -LocalPath ".\hostnamer.sh" -DestPath $destFolder
+        #RunCmdViaSSH -VM_Name $newvm -User $guestUser -Password $guestPassword -Cmd $cmd
 
         #Upload installer tar ball to Linux VM
         $time = date -Format dd/MM/yy`thh:mm:ss.m
@@ -2027,15 +2027,15 @@ function main {
         UploadFileViaSSH -VM_Name $newvm -User $guestUser -Password $guestPassword -LocalPath $agentInstaller -DestPath $destFolder
 
         #Extract the installer
-        Write-Host -ForeGroundColor Yellow "$newvm : Extract the installer and start the installation"
-        $cmd = "tar -xvf VMware-*-linux-*.tar*"
+        Write-Host -ForeGroundColor Yellow "$newvm : Extract the installer and install VHCI"
+        $cmd = "tar -xvf VMware-*-linux-*.tar*; cd /usr/local/vhci-hcd-1.15; sudo  make; sudo make install"
         Write-Host -ForeGroundColor Yellow "Run cmd '$cmd' in VM '$newvm' with user '$guestUser'"
         $taroutput = RunCmdViaSSH -VM_Name $newvm -User $guestUser -Password $guestPassword -Cmd $cmd
 
         $time = date -Format dd/MM/yy`thh:mm:ss.m
         LogWrite "[INFO] $time- Start the installation and registration to the Horizon connection server.`n"
         # Start the installation and registration to the Horizon connection server
-        $cmd = "cd VMware-*-linux* && sudo ./install_viewagent.sh -r yes -A yes -n $newvm -b $brokerAddress -d $domainName -u $brokerAdminName -p $brokerAdminPassword"
+        $cmd = "cd VMware-*-linux* && sudo ./install_viewagent.sh -r yes -a yes -A yes -n $newvm -b $brokerAddress -d $domainName -u $brokerAdminName -p $brokerAdminPassword"
         Write-Host -ForeGroundColor Yellow "[INFO] Run the Horizon agent installation and registration with VM name '$newvm' using the user '$guestUser'."
         $outputBox.AppendText("[INFO] Run the Horizon agent installation and registration with VM name '$newvm' using the user '$guestUser'..`r`n")
         RunCmdViaSSH -VM_Name $newvm -User $guestUser -Password $guestPassword -Cmd $cmd
@@ -2341,6 +2341,10 @@ function main {
 
 
 ######################################### Adding GPU PCI card via passthrough
+        $ObjHost = Get-EsxCli -VMHost $destHost
+        $GPUsIdslist = $ObjHost.hardware.pci.list("0x300") | Where-Object {$_.ModuleName -eq "pciPassthru"} | select -Property Address
+        [array]::Reverse($GPUsIdslist)
+        
         $GpuConf=get-vmhost $destHost | get-vm | get-view
         $IdList = $GpuConf.config.hardware.device | ?{$_.Backing -is "VMware.Vim.VirtualPCIPassthroughDeviceBackingInfo"} | Select-Object  -Property @{N="Id";E={$_.Backing.Id}}
         $SlotLeft = 4 - $IdList.Id.Count
@@ -2555,6 +2559,9 @@ function main {
 	    }
 
         # Adding GPU card passthrough
+        $ObjHost = Get-EsxCli -VMHost $destHost
+        $GPUsIdslist = $ObjHost.hardware.pci.list("0x300") | Where-Object {$_.ModuleName -eq "pciPassthru"} | select -Property Address
+        [array]::Reverse($GPUsIdslist)
 
         $GpuConf=get-vmhost $destHost | get-vm | get-view
         $IdList = $GpuConf.config.hardware.device | ?{$_.Backing -is "VMware.Vim.VirtualPCIPassthroughDeviceBackingInfo"} | Select-Object  -Property @{N="Id";E={$_.Backing.Id}}
