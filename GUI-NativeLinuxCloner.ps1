@@ -386,7 +386,7 @@ $vmnbr_InputBox.Text
 $vmnbr_InputBox.Text = "32"
 $vmnbr_groupBox.Controls.Add($vmnbr_InputBox)
 
-# Broker Address label
+# VM Clones number label
 $vmnbr_Label = New-Object System.Windows.Forms.Label
 $vmnbr_Label.Text = "VMs"
 $vmnbr_Label.Location = New-Object System.Drawing.Size(70,28)
@@ -584,6 +584,64 @@ $gstpass_InputBox.TabIndex = 16
 $gstpass_InputBox.UseSystemPasswordChar = $true
 $guest_groupBox.Controls.Add($gstpass_InputBox)
 
+
+
+
+
+# VM Clones range Groupbox
+$vmrng_groupBox = New-Object System.Windows.Forms.GroupBox
+$vmrng_groupBox.Autosize = $True
+$vmrng_groupBox.Location = New-Object System.Drawing.Size(770,130)
+$vmrng_groupBox.size = New-Object System.Drawing.Size(145,50)
+$vmrng_groupBox.text = "Range of Clones"
+$vmrng_groupBox.Font = New-Object System.Drawing.Font("Tahoma",10,[System.Drawing.FontStyle]::Bold)
+$Form.Controls.Add($vmrng_groupBox)
+
+# VM Clones range usage check box
+$vmrng_checkbox = New-Object System.Windows.Forms.CheckBox
+$vmrng_checkbox.AutoSize = $True
+$vmrng_checkbox.Location = New-Object System.Drawing.Point(15,27)
+$vmrng_checkbox.TabIndex = 17
+$vmrng_checkbox.Text = "Use this range:"
+$vmrng_checkbox.UseVisualStyleBackColor = $True
+$vmrng_groupBox.Controls.Add($vmrng_checkbox)
+
+# VM Clones start range inputbox
+$vmstrnbr_InputBox = New-Object System.Windows.Forms.TextBox
+$vmstrnbr_InputBox.Location = New-Object System.Drawing.Size(15,25)
+$vmstrnbr_InputBox.Size = New-Object System.Drawing.Size(50,50)
+$vmstrnbr_InputBox.TabIndex = 18
+$vmstrnbr_InputBox.Text
+$vmstrnbr_InputBox.Text = "0"
+$vmrng_groupBox.Controls.Add($vmstrnbr_InputBox)
+
+# VM Clones start range label
+$vmstrnbr_Label = New-Object System.Windows.Forms.Label
+$vmstrnbr_Label.Text = "From:"
+$vmstrnbr_Label.Location = New-Object System.Drawing.Size(70,28)
+$vmstrnbr_Label.Font = New-Object System.Drawing.Font("Calibri",10,[System.Drawing.FontStyle]::Bold)
+$vmstrnbr_Label.AutoSize = $True
+$vmrng_groupBox.Controls.Add($vmstrnbr_Label)
+
+# VM Clones end range inputbox
+$vmendnbr_InputBox = New-Object System.Windows.Forms.TextBox
+$vmendnbr_InputBox.Location = New-Object System.Drawing.Size(15,25)
+$vmendnbr_InputBox.Size = New-Object System.Drawing.Size(50,50)
+$vmendnbr_InputBox.TabIndex = 19
+$vmendnbr_InputBox.Text
+$vmendnbr_InputBox.Text = "32"
+$vmrng_groupBox.Controls.Add($vmendnbr_InputBox)
+
+# VM Clones end range label
+$vmendnbr_Label = New-Object System.Windows.Forms.Label
+$vmendnbr_Label.Text = "To:"
+$vmendnbr_Label.Location = New-Object System.Drawing.Size(70,28)
+$vmendnbr_Label.Font = New-Object System.Drawing.Font("Calibri",10,[System.Drawing.FontStyle]::Bold)
+$vmendnbr_Label.AutoSize = $True
+$vmrng_groupBox.Controls.Add($vmendnbr_Label)
+
+
+
 # Selected tar ball label
 $tar_Label = New-Object System.Windows.Forms.Label
 $tar_Label.Text = "No Horizon Agent tar ball file selected yet."
@@ -601,7 +659,7 @@ $outputBox.MultiLine = $True                                                    
 $outputBox.ScrollBars = "Both"                                                    #adding scroll bars if required
 $outputBox.ForeColor = [Drawing.Color]::Green
 $outputBox.DataBindings.DefaultDataSourceUpdateMode = [System.Windows.Forms.DataSourceUpdateMode]::OnValidation
-$outputBox.TabIndex = 20
+$outputBox.TabIndex = 24
 $outputBox.Font = New-Object System.Drawing.Font("Consolas",8,[System.Drawing.FontStyle]::Regular)    #Output text
 $Form.Controls.Add($outputBox)                                                    #activating the text box inside the primary window
 
@@ -615,7 +673,7 @@ $file_Button.Text = "Select Horizon Agent tar ball"
 $file_Button.Font = New-Object System.Drawing.Font("Comic Sans MS",10,[System.Drawing.FontStyle]::Bold)
 $file_Button.Cursor = [System.Windows.Forms.Cursors]::Hand
 #$file_Button.Autosize = $True
-$file_Button.TabIndex = 17
+$file_Button.TabIndex = 21
 $file_Button.UseVisualStyleBackColor = $True
 $file_Button.Add_Click({})
 $Form.Controls.Add($file_Button)
@@ -649,7 +707,7 @@ $btn_CANCEL.Autosize = $True
 $btn_CANCEL.Location = New-Object System.Drawing.Size(25,585)
 $btn_CANCEL.Name = "btn_CANCEL"
 $btn_CANCEL.Size = New-Object System.Drawing.Size(75,40)
-$btn_CANCEL.TabIndex = 19
+$btn_CANCEL.TabIndex = 23
 $btn_CANCEL.UseVisualStyleBackColor = $True
 $btn_CANCEL.Text = "Cancel"
 #$btn_CANCEL.BackColor = [System.Drawing.Color]::Orange
@@ -677,7 +735,7 @@ $ok_Button.Font = New-Object System.Drawing.Font("Comic Sans MS",10,[System.Draw
 $ok_Button.Cursor = [System.Windows.Forms.Cursors]::Hand
 $ok_Button.BackColor = [System.Drawing.Color]::DeepSkyBlue
 $ok_Button.Autosize = $True
-$ok_Button.TabIndex = 18
+$ok_Button.TabIndex = 22
 $ok_Button.UseVisualStyleBackColor = $True
 $ok_Button.Add_Click({})                                                             #the action triggered by the button
 $Form.Controls.Add($ok_Button)                                                       #activating the button inside the primary window
@@ -728,7 +786,7 @@ $VMOp_Button.Text = "Virtual Machines Operations"                               
 $VMOp_Button.Font = New-Object System.Drawing.Font("Comic Sans MS",10,[System.Drawing.FontStyle]::Bold)
 $VMOp_Button.Cursor = [System.Windows.Forms.Cursors]::Hand
 #$VMOp_Button.Autosize = $True
-$VMOp_Button.TabIndex = 17
+$VMOp_Button.TabIndex = 20
 $VMOp_Button.UseVisualStyleBackColor = $True
 $VMOp_Button.Add_Click({})                                                             #the action triggered by the button
 $Form.Controls.Add($VMOp_Button)                                                       #activating the button inside the primary window
@@ -1145,7 +1203,7 @@ function main {
 
     $destHostList1 = "hx-vdi-hyp159.ebi.ac.uk", "hx-vdi-hyp160.ebi.ac.uk", "hx-vdi-hyp161.ebi.ac.uk", "hx-vdi-hyp162.ebi.ac.uk", "hx-vdi-hyp163.ebi.ac.uk",
      "hx-vdi-hyp164.ebi.ac.uk", "hx-vdi-hyp165.ebi.ac.uk", "hx-vdi-hyp166.ebi.ac.uk", "hx-vdi-hyp167.ebi.ac.uk", "hx-vdi-hyp168.ebi.ac.uk", "hx-vdi-hyp169.ebi.ac.uk",
-     "hx-vdi-hyp170.ebi.ac.uk", "hx-vdi-hyp171.ebi.ac.uk", "hx-vdi-hyp172.ebi.ac.uk", "hx-vdi-hyp173.ebi.ac.uk", "hx-vdi-hyp174.ebi.ac.uk"      
+     "hx-vdi-hyp170.ebi.ac.uk", "hx-vdi-hyp171.ebi.ac.uk", "hx-vdi-hyp172.ebi.ac.uk", "hx-vdi-hyp173.ebi.ac.uk", "hx-vdi-hyp174.ebi.ac.uk"
 
     $destHostList2 = "hx-vdi-hyp174.ebi.ac.uk", "hx-vdi-hyp173.ebi.ac.uk", "hx-vdi-hyp172.ebi.ac.uk", "hx-vdi-hyp171.ebi.ac.uk", "hx-vdi-hyp170.ebi.ac.uk",
       "hx-vdi-hyp169.ebi.ac.uk", "hx-vdi-hyp168.ebi.ac.uk", "hx-vdi-hyp167.ebi.ac.uk", "hx-vdi-hyp166.ebi.ac.uk", "hx-vdi-hyp165.ebi.ac.uk",
@@ -1950,7 +2008,7 @@ function main {
        {
         $destVMName = $Org_VMName + "-" + $i.ToString("00")
 
-        
+
         $VMName = $destVMName
         $newvm = Get-vm $VMName
         Get-VM $VMName | where { $_.PowerState –eq "PoweredOff" } | Start-VM -Confirm:$false
@@ -2287,13 +2345,13 @@ function main {
             $outputBox.AppendText("[INFO] Current ESXi host: $destHost is good to host the VM. Adding GPU PCI device to the VM $VMName...`r`n")
             LogWrite "[INFO] Current ESXi host: $destHost is good to host the VM. Adding GPU PCI device to the VM $VMName...`n"
         }
-        
-        
-        
-        
-        
-        
-        
+
+
+
+
+
+
+
         elseif ($IdList.Id.Length -ge 4 -and $OnlineVMcount -lt 4)
 ######################################### Something Wrong!!! The case of having offline VMs with PCI device connected to them
         {
@@ -2344,7 +2402,7 @@ function main {
         $ObjHost = Get-EsxCli -VMHost $destHost
         $GPUsIdslist = $ObjHost.hardware.pci.list("0x300") | Where-Object {$_.ModuleName -eq "pciPassthru"} | select -Property Address
         [array]::Reverse($GPUsIdslist)
-        
+
         $GpuConf=get-vmhost $destHost | get-vm | get-view
         $IdList = $GpuConf.config.hardware.device | ?{$_.Backing -is "VMware.Vim.VirtualPCIPassthroughDeviceBackingInfo"} | Select-Object  -Property @{N="Id";E={$_.Backing.Id}}
         $SlotLeft = 4 - $IdList.Id.Count
