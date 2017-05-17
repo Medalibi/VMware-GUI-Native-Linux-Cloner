@@ -371,8 +371,8 @@ $del_groupBox.Controls.Add($del_checkbox)
 # VM Clones number Groupbox
 $vmnbr_groupBox = New-Object System.Windows.Forms.GroupBox
 $vmnbr_groupBox.Autosize = $True
-$vmnbr_groupBox.Location = New-Object System.Drawing.Size(770,130)
-$vmnbr_groupBox.size = New-Object System.Drawing.Size(145,50)
+$vmnbr_groupBox.Location = New-Object System.Drawing.Size(815,150)
+$vmnbr_groupBox.size = New-Object System.Drawing.Size(150,50)
 $vmnbr_groupBox.text = "Number of Clones"
 $vmnbr_groupBox.Font = New-Object System.Drawing.Font("Tahoma",10,[System.Drawing.FontStyle]::Bold)
 $Form.Controls.Add($vmnbr_groupBox)
@@ -543,7 +543,7 @@ $vcenter_groupBox.Controls.Add($vcpass_InputBox)
 # Linux Guest GroupBox
 $guest_groupBox = New-Object System.Windows.Forms.GroupBox
 $guest_groupBox.Autosize = $True
-$guest_groupBox.Location = New-Object System.Drawing.Size(540,220)
+$guest_groupBox.Location = New-Object System.Drawing.Size(540,240)
 $guest_groupBox.size = New-Object System.Drawing.Size(240,150)
 $guest_groupBox.text = "Guest OS User Credentials"
 $guest_groupBox.Font = New-Object System.Drawing.Font("Tahoma",10,[System.Drawing.FontStyle]::Bold)
@@ -584,15 +584,11 @@ $gstpass_InputBox.TabIndex = 16
 $gstpass_InputBox.UseSystemPasswordChar = $true
 $guest_groupBox.Controls.Add($gstpass_InputBox)
 
-
-
-
-
 # VM Clones range Groupbox
 $vmrng_groupBox = New-Object System.Windows.Forms.GroupBox
 $vmrng_groupBox.Autosize = $True
-$vmrng_groupBox.Location = New-Object System.Drawing.Size(770,130)
-$vmrng_groupBox.size = New-Object System.Drawing.Size(145,50)
+$vmrng_groupBox.Location = New-Object System.Drawing.Size(815,235)
+$vmrng_groupBox.size = New-Object System.Drawing.Size(145,150)
 $vmrng_groupBox.text = "Range of Clones"
 $vmrng_groupBox.Font = New-Object System.Drawing.Font("Tahoma",10,[System.Drawing.FontStyle]::Bold)
 $Form.Controls.Add($vmrng_groupBox)
@@ -600,7 +596,7 @@ $Form.Controls.Add($vmrng_groupBox)
 # VM Clones range usage check box
 $vmrng_checkbox = New-Object System.Windows.Forms.CheckBox
 $vmrng_checkbox.AutoSize = $True
-$vmrng_checkbox.Location = New-Object System.Drawing.Point(15,27)
+$vmrng_checkbox.Location = New-Object System.Drawing.Point(15,25)
 $vmrng_checkbox.TabIndex = 17
 $vmrng_checkbox.Text = "Use this range:"
 $vmrng_checkbox.UseVisualStyleBackColor = $True
@@ -608,7 +604,7 @@ $vmrng_groupBox.Controls.Add($vmrng_checkbox)
 
 # VM Clones start range inputbox
 $vmstrnbr_InputBox = New-Object System.Windows.Forms.TextBox
-$vmstrnbr_InputBox.Location = New-Object System.Drawing.Size(15,25)
+$vmstrnbr_InputBox.Location = New-Object System.Drawing.Size(70,55)
 $vmstrnbr_InputBox.Size = New-Object System.Drawing.Size(50,50)
 $vmstrnbr_InputBox.TabIndex = 18
 $vmstrnbr_InputBox.Text
@@ -618,14 +614,14 @@ $vmrng_groupBox.Controls.Add($vmstrnbr_InputBox)
 # VM Clones start range label
 $vmstrnbr_Label = New-Object System.Windows.Forms.Label
 $vmstrnbr_Label.Text = "From:"
-$vmstrnbr_Label.Location = New-Object System.Drawing.Size(70,28)
-$vmstrnbr_Label.Font = New-Object System.Drawing.Font("Calibri",10,[System.Drawing.FontStyle]::Bold)
+$vmstrnbr_Label.Location = New-Object System.Drawing.Size(15,58)
+$vmstrnbr_Label.Font = New-Object System.Drawing.Font("Tahoma",10,[System.Drawing.FontStyle]::Bold)
 $vmstrnbr_Label.AutoSize = $True
 $vmrng_groupBox.Controls.Add($vmstrnbr_Label)
 
 # VM Clones end range inputbox
 $vmendnbr_InputBox = New-Object System.Windows.Forms.TextBox
-$vmendnbr_InputBox.Location = New-Object System.Drawing.Size(15,25)
+$vmendnbr_InputBox.Location = New-Object System.Drawing.Size(70,85)
 $vmendnbr_InputBox.Size = New-Object System.Drawing.Size(50,50)
 $vmendnbr_InputBox.TabIndex = 19
 $vmendnbr_InputBox.Text
@@ -635,12 +631,10 @@ $vmrng_groupBox.Controls.Add($vmendnbr_InputBox)
 # VM Clones end range label
 $vmendnbr_Label = New-Object System.Windows.Forms.Label
 $vmendnbr_Label.Text = "To:"
-$vmendnbr_Label.Location = New-Object System.Drawing.Size(70,28)
-$vmendnbr_Label.Font = New-Object System.Drawing.Font("Calibri",10,[System.Drawing.FontStyle]::Bold)
+$vmendnbr_Label.Location = New-Object System.Drawing.Size(15,88)
+$vmendnbr_Label.Font = New-Object System.Drawing.Font("Tahoma",10,[System.Drawing.FontStyle]::Bold)
 $vmendnbr_Label.AutoSize = $True
 $vmrng_groupBox.Controls.Add($vmendnbr_Label)
-
-
 
 # Selected tar ball label
 $tar_Label = New-Object System.Windows.Forms.Label
@@ -754,6 +748,8 @@ $ok_Button.Add_Click({
     $data_groupBox.Refresh()
     $vmnbr_groupBox.BackColor = [System.Drawing.Color]::Transparent
     $vmnbr_groupBox.Refresh()
+    $vmrng_groupBox.BackColor = [System.Drawing.Color]::Transparent
+    $vmrng_groupBox.Refresh()
     $spec_groupBox.BackColor = [System.Drawing.Color]::Transparent
     $spec_groupBox.Refresh()
     $snap_groupBox.BackColor = [System.Drawing.Color]::Transparent
@@ -780,7 +776,7 @@ $ok_Button.Add_Click({
 
 # VM Operation Button
 $VMOp_Button = New-Object System.Windows.Forms.Button                                  #create the button
-$VMOp_Button.Location = New-Object System.Drawing.Size(810,270)                         #location of the button (px) in relation to the primary window's edges
+$VMOp_Button.Location = New-Object System.Drawing.Size(815,410)                         #location of the button (px) in relation to the primary window's edges
 $VMOp_Button.Size = New-Object System.Drawing.Size(140,50)                              #the size in px of the button (length, height)
 $VMOp_Button.Text = "Virtual Machines Operations"                                                 #labeling the button
 $VMOp_Button.Font = New-Object System.Drawing.Font("Comic Sans MS",10,[System.Drawing.FontStyle]::Bold)
@@ -808,6 +804,8 @@ $VMOp_Button.Add_Click({
     $data_groupBox.Refresh()
     $vmnbr_groupBox.BackColor = [System.Drawing.Color]::Transparent
     $vmnbr_groupBox.Refresh()
+    $vmrng_groupBox.BackColor = [System.Drawing.Color]::Transparent
+    $vmrng_groupBox.Refresh()
     $spec_groupBox.BackColor = [System.Drawing.Color]::Transparent
     $spec_groupBox.Refresh()
     $snap_groupBox.BackColor = [System.Drawing.Color]::Transparent
@@ -1077,6 +1075,15 @@ function main {
         $vmnbr_groupBox.BackColor = [System.Drawing.Color]::DarkOrange
         $vmnbr_groupBox.Refresh()
     }
+     if ($vmrng_checkbox.Checked -eq $true -and $vmstrnbr_InputBox.Text -eq "" -and $vmendnbr_InputBox.Text -eq "")
+    {
+        Write-Host -ForeGroundColor Red "[ERROR] Deployment Aborded. Clone VMs range not specified."
+        $outputBox.AppendText("[ERROR] Deployment Aborded. Clone VMs range not specified.`r`n")
+        $global:init_dep = $false
+        $global:init_vmops = $false
+        $vmrng_groupBox.BackColor = [System.Drawing.Color]::DarkOrange
+        $vmrng_groupBox.Refresh()
+    }
 
 
 ########################################################################################################
@@ -1156,8 +1163,17 @@ function main {
     $guestPassword = $gstpass_InputBox.Text
     Write-Host -ForeGroundColor Green "[INFO] A Guest OS user password has been selected."
 
-    $vm_nbr = $vmnbr_InputBox.Text
-    Write-Host -ForeGroundColor Green "[INFO] Number of VM Clones selected: $vm_nbr"
+    if ($vmrng_checkbox.Checked -eq $false)
+    {
+        $vm_nbr = $vmnbr_InputBox.Text
+        Write-Host -ForeGroundColor Green "[INFO] Number of VM Clones selected: $vm_nbr"
+    }
+    else
+    {
+        $vm_str_nbr = $vmstrnbr_InputBox.Text
+        $vm_nbr = $vmendnbr_InputBox.Text
+        Write-Host -ForeGroundColor Green "[INFO] Range of VM Clones selected is from $vm_str_nbr to $vm_nbr"
+    }
 
     Write-Host -ForeGroundColor Green "########################################################`n"
 
@@ -1183,7 +1199,14 @@ function main {
     LogWrite "[INFO]- VCenter server used is: $vcAddress.`n"
     LogWrite "[INFO]- VCenter Admin runnign the deployment is: $vcAdmin.`n"
     LogWrite "[INFO]- Guest OS user used: $vcAddress.`n"
-    LogWrite "[INFO]- Number of VM Clones is: $vm_nbr.`n"
+    if ($vmrng_checkbox.Checked -eq $false)
+    {
+        LogWrite "[INFO]- Number of VM Clones is: $vm_nbr.`n"
+    }
+    else
+    {
+        LogWrite "[INFO]- Range of VM Clones is from: $vm_str_nbr to: $vm_nbr.`n"
+    }
     LogWrite "##############################################################################`n"
 
 
@@ -1198,7 +1221,7 @@ function main {
     LogWrite "[INFO] $time- Connecting to vCenter Address: $vcAddress."
 
     $j=0
-    #$GPUsIdslist= "0000:0a:00.0", "0000:09:00.0", "0000:08:00.0", "0000:07:00.0"
+    
     $destFolder = "/home/$guestUser/"
 
     $destHostList1 = "hx-vdi-hyp159.ebi.ac.uk", "hx-vdi-hyp160.ebi.ac.uk", "hx-vdi-hyp161.ebi.ac.uk", "hx-vdi-hyp162.ebi.ac.uk", "hx-vdi-hyp163.ebi.ac.uk",
@@ -1213,8 +1236,14 @@ function main {
     [Console]::ResetColor()
 
     $deploymentloop = $vm_nbr
-
-    $i=1
+    if ($vmrng_checkbox.Checked -eq $false)
+    {
+        $i=1
+    }
+    else
+    {
+        $i=$vm_str_nbr
+    }
 
     while ($i -le $deploymentloop)
     {
@@ -1481,8 +1510,10 @@ function main {
         [Console]::ResetColor()
 
         }
-        $j=0
-        $i=1
+        
+        
+        #$j=0
+        #$i=1
 
     while ($false) #($i -le $deploymentloop)     ############# Disabling Horizon Agent installation. It is now performed via an Ansible script (faster)
     {
@@ -1735,8 +1766,18 @@ function main {
     $guestPassword = $gstpass_InputBox.Text
     Write-Host -ForeGroundColor Green "[INFO] A Guest OS user password has been selected."
 
-    $vm_nbr = $vmnbr_InputBox.Text
-    Write-Host -ForeGroundColor Green "[INFO] Number of VM Clones selected: $vm_nbr"
+    if ($vmrng_checkbox.Checked -eq $false)
+    {
+        $vm_nbr = $vmnbr_InputBox.Text
+        Write-Host -ForeGroundColor Green "[INFO] Number of VM Clones selected: $vm_nbr"
+    }
+    else
+    {
+        $vm_str_nbr = $vmstrnbr_InputBox.Text
+        $vm_nbr = $vmendnbr_InputBox.Text
+        Write-Host -ForeGroundColor Green "[INFO] Range of VM Clones selected is from $vm_str_nbr to $vm_nbr"
+    }
+    
     Write-Host -ForeGroundColor Green "#################################################################`n"
 
 
@@ -1763,7 +1804,14 @@ function main {
     LogWrite "[INFO]- VCenter server used is: $vcAddress.`n"
     LogWrite "[INFO]- VCenter Admin runnign the deployment is: $vcAdmin.`n"
     LogWrite "[INFO]- Guest OS user used: $vcAddress.`n"
-    LogWrite "[INFO]- Number of VM Clones is: $vm_nbr.`n"
+    if ($vmrng_checkbox.Checked -eq $false)
+    {
+        LogWrite "[INFO]- Number of VM Clones is: $vm_nbr.`n"
+    }
+    else
+    {
+        LogWrite "[INFO]- Range of VM Clones is from: $vm_str_nbr to: $vm_nbr.`n"
+    }
     LogWrite "##############################################################################`n"
 
     #Connect to vCenter
@@ -1775,8 +1823,6 @@ function main {
     $time = date -Format dd/MM/yy`thh:mm:ss.m
     LogWrite "[INFO] $time- Connecting to vCenter Address: $vcAddress."
 
-
-    #$GPUsIdslist= "0000:0a:00.0", "0000:09:00.0", "0000:08:00.0", "0000:07:00.0"
     $destFolder = "/home/$guestUser/"
 
     $destHostList1 = "hx-vdi-hyp159.ebi.ac.uk", "hx-vdi-hyp160.ebi.ac.uk", "hx-vdi-hyp161.ebi.ac.uk", "hx-vdi-hyp162.ebi.ac.uk", "hx-vdi-hyp163.ebi.ac.uk",
@@ -1796,7 +1842,14 @@ function main {
 
     $operationloop = $vm_nbr
     $j=0
-    $i=1
+    if ($vmrng_checkbox.Checked -eq $false)
+    {
+        $i=1
+    }
+    else
+    {
+        $i=$vm_str_nbr
+    }
 
     while ($i -le $operationloop)
     {
@@ -1895,15 +1948,16 @@ function main {
         LogWrite "[INFO] $time- VM: $VMName deleted."
 
        }
+
+
+
+
+
        "(7). Add GPU PCI Device"
       {
-
+        
         # Add PCi device GPU
-
-        #$taskShDn =
         Get-VM $VMName | where { $_.PowerState –eq "PoweredOn" } | Stop-VM –confirm:$false
-
-        #$GPUsIdslist= "0000:0a:00.0", "0000:09:00.0", "0000:08:00.0", "0000:07:00.0"
 
         foreach ($vm in (get-vm $VMName)) {get-vmresourceconfiguration $vm | set-vmresourceconfiguration -MemReservationMB $vm.MemoryMB}
 
@@ -2004,6 +2058,14 @@ function main {
         LogWrite "[INFO] $time- PCI Device Added to VM $VMName`n"
         LogWrite "#################################################################################`n"
       }
+
+
+
+
+
+
+
+
        "(8). Install Horizon Agent"
        {
         $destVMName = $Org_VMName + "-" + $i.ToString("00")
