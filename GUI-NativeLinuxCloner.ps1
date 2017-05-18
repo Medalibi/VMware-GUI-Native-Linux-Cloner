@@ -1666,7 +1666,7 @@ function main {
     $time = date -Format dd/MM/yy`thh:mm:ss.m
     LogWrite "[INFO] $time- The VM list is stored at: $VMIPaddress`n"
 
-    Get-VM $VMlist | select Name, @{N="IPAddress";E={@($_.guest.IPAddress[0])}} | out-file $VMIPaddress -Encoding ASCII
+    Get-VM $VMlist | select Name, @{N="IPAddress";E={@($_.guest.IPAddress[0])}} | ft -auto | out-file $VMIPaddress -Encoding ASCII
 
     Write-Host -ForeGroundColor Green "[INFO] IP Address has been gathered and saved into $VMIPaddress"
     $outputBox.AppendText("[INFO] IP Address has been gathered and saved into $VMIPaddress`r`n")
@@ -2230,7 +2230,7 @@ function main {
         $time = date -Format dd/MM/yy`thh:mm:ss.m
         LogWrite "[INFO] $time- The VM list is stored at: $VMIPaddress`n"
 
-        Get-VM $VMlist | select Name, @{N="IPAddress";E={@($_.guest.IPAddress[0])}} | out-file $VMIPaddress -Encoding ASCII
+        Get-VM $VMlist | select Name, @{N="IPAddress";E={@($_.guest.IPAddress[0])}} | ft -auto | out-file $VMIPaddress -Encoding ASCII
 
         Write-Host -ForeGroundColor Green "[INFO] IP Address has been gathered and saved into $VMIPaddress"
         Write-Host -ForeGroundColor Green "#################################################################################`n"
