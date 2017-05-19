@@ -21,7 +21,7 @@
 ##     shell: cd /usr/local/vhci-hcd-1.15; sudo  make; sudo make install
 
    - name: Install and register the Horizon ViewAgent with the Connection server
-     shell: cd /home/setup/VMware-*-linux* && ./install_viewagent.sh -r no -A yes -n $(hostname -s) -b broker7test.courses.ebi.ac.uk -d courses.ebi.ac.uk -u linuxviewadmin -p fridge 
+     shell: cd /home/setup/VMware-*-linux* && ./install_viewagent.sh -r no -A yes -n $(hostname -s) -b broker7test.courses.ebi.ac.uk -d courses.ebi.ac.uk -u linuxviewadmin -p password 
      register: HorizonInstallLog
 
    - name: Collecting installation logs
