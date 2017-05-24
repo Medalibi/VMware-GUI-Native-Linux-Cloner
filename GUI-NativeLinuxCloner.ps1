@@ -1235,14 +1235,14 @@ function main {
 
     [Console]::ResetColor()
 
-    $deploymentloop = $vm_nbr
+    [int]$deploymentloop = [convert]::ToInt32($vm_nbr, 10)
     if ($vmrng_checkbox.Checked -eq $false)
     {
-        $i=1
+        [int]$i=1
     }
     else
     {
-        $i=$vm_str_nbr
+        [int]$i=[convert]::ToInt32($vm_str_nbr, 10)
     }
 
     while ($i -le $deploymentloop)
@@ -1840,15 +1840,15 @@ function main {
     Write-Host -ForeGroundColor Green "#################################################################"
     [Console]::ResetColor()
 
-    $operationloop = $vm_nbr
+    [int]$operationloop = [convert]::ToInt32($vm_nbr, 10)
     $j=0
     if ($vmrng_checkbox.Checked -eq $false)
     {
-        $i=1
+        [int]$i=1
     }
     else
     {
-        $i=$vm_str_nbr
+        [int]$i=[convert]::ToInt32($vm_str_nbr, 10)
     }
 
     while ($i -le $operationloop)
