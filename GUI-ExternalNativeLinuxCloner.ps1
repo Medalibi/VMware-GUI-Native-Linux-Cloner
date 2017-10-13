@@ -17,7 +17,7 @@ $Form.AutoScaleMode = [System.Windows.Forms.AutoScaleMode]::Font
 $Form.AutoSize = $True
 $Form.StartPosition = "CenterScreen"                                              #loads the window in the center of the screen
 #$Form.FormBorderStyle = [System.Windows.Forms.FormBorderStyle]::FixedToolWindow  #Make the window border fixed
-$Form.Text = "VMWare Horizon Native Linux Pool Deployment Wizzard"                #window description
+$Form.Text = "VMWare Horizon External Native Linux Pool Deployment Wizzard"                #window description
 #$form.Topmost = $True
 $form.DataBindings.DefaultDataSourceUpdateMode = [System.Windows.Forms.DataSourceUpdateMode]::OnValidation
 $Icon = [system.drawing.icon]::ExtractAssociatedIcon($PSHOME + "\powershell.exe")
@@ -383,7 +383,7 @@ $vmnbr_InputBox.Location = New-Object System.Drawing.Size(15,25)
 $vmnbr_InputBox.Size = New-Object System.Drawing.Size(50,50)
 $vmnbr_InputBox.TabIndex = 9
 $vmnbr_InputBox.Text
-$vmnbr_InputBox.Text = "32"
+$vmnbr_InputBox.Text = "8"
 $vmnbr_groupBox.Controls.Add($vmnbr_InputBox)
 
 # VM Clones number label
@@ -625,7 +625,7 @@ $vmendnbr_InputBox.Location = New-Object System.Drawing.Size(70,85)
 $vmendnbr_InputBox.Size = New-Object System.Drawing.Size(50,50)
 $vmendnbr_InputBox.TabIndex = 19
 $vmendnbr_InputBox.Text
-$vmendnbr_InputBox.Text = "32"
+$vmendnbr_InputBox.Text = "8"
 $vmrng_groupBox.Controls.Add($vmendnbr_InputBox)
 
 # VM Clones end range label
@@ -1224,13 +1224,18 @@ function main {
     
     $destFolder = "/home/$guestUser/"
 
-    $destHostList1 = "hx-vdi-hyp159.ebi.ac.uk", "hx-vdi-hyp160.ebi.ac.uk", "hx-vdi-hyp161.ebi.ac.uk", "hx-vdi-hyp162.ebi.ac.uk", "hx-vdi-hyp163.ebi.ac.uk",
-     "hx-vdi-hyp164.ebi.ac.uk", "hx-vdi-hyp165.ebi.ac.uk", "hx-vdi-hyp166.ebi.ac.uk", "hx-vdi-hyp167.ebi.ac.uk", "hx-vdi-hyp168.ebi.ac.uk", "hx-vdi-hyp169.ebi.ac.uk",
-     "hx-vdi-hyp170.ebi.ac.uk", "hx-vdi-hyp171.ebi.ac.uk", "hx-vdi-hyp172.ebi.ac.uk", "hx-vdi-hyp173.ebi.ac.uk", "hx-vdi-hyp174.ebi.ac.uk"
+    #$destHostList1 = "hx-vdi-hyp159.ebi.ac.uk", "hx-vdi-hyp160.ebi.ac.uk", "hx-vdi-hyp161.ebi.ac.uk", "hx-vdi-hyp162.ebi.ac.uk", "hx-vdi-hyp163.ebi.ac.uk",
+    # "hx-vdi-hyp164.ebi.ac.uk", "hx-vdi-hyp165.ebi.ac.uk", "hx-vdi-hyp166.ebi.ac.uk", "hx-vdi-hyp167.ebi.ac.uk", "hx-vdi-hyp168.ebi.ac.uk", "hx-vdi-hyp169.ebi.ac.uk",
+    # "hx-vdi-hyp170.ebi.ac.uk", "hx-vdi-hyp171.ebi.ac.uk", "hx-vdi-hyp172.ebi.ac.uk", "hx-vdi-hyp173.ebi.ac.uk", "hx-vdi-hyp174.ebi.ac.uk"
 
-    $destHostList2 = "hx-vdi-hyp174.ebi.ac.uk", "hx-vdi-hyp173.ebi.ac.uk", "hx-vdi-hyp172.ebi.ac.uk", "hx-vdi-hyp171.ebi.ac.uk", "hx-vdi-hyp170.ebi.ac.uk",
-      "hx-vdi-hyp169.ebi.ac.uk", "hx-vdi-hyp168.ebi.ac.uk", "hx-vdi-hyp167.ebi.ac.uk", "hx-vdi-hyp166.ebi.ac.uk", "hx-vdi-hyp165.ebi.ac.uk",
-       "hx-vdi-hyp164.ebi.ac.uk", "hx-vdi-hyp163.ebi.ac.uk", "hx-vdi-hyp162.ebi.ac.uk", "hx-vdi-hyp161.ebi.ac.uk", "hx-vdi-hyp160.ebi.ac.uk", "hx-vdi-hyp159.ebi.ac.uk"
+    $destHostList1 = "hx-vdi-hyp175.ebi.ac.uk","hx-vdi-hyp176.ebi.ac.uk","hx-vdi-hyp177.ebi.ac.uk"
+
+    #$destHostList2 = "hx-vdi-hyp174.ebi.ac.uk", "hx-vdi-hyp173.ebi.ac.uk", "hx-vdi-hyp172.ebi.ac.uk", "hx-vdi-hyp171.ebi.ac.uk", "hx-vdi-hyp170.ebi.ac.uk",
+    #  "hx-vdi-hyp169.ebi.ac.uk", "hx-vdi-hyp168.ebi.ac.uk", "hx-vdi-hyp167.ebi.ac.uk", "hx-vdi-hyp166.ebi.ac.uk", "hx-vdi-hyp165.ebi.ac.uk",
+    #   "hx-vdi-hyp164.ebi.ac.uk", "hx-vdi-hyp163.ebi.ac.uk", "hx-vdi-hyp162.ebi.ac.uk", "hx-vdi-hyp161.ebi.ac.uk", "hx-vdi-hyp160.ebi.ac.uk", "hx-vdi-hyp159.ebi.ac.uk"
+
+    $destHostList2 = "hx-vdi-hyp177.ebi.ac.uk","hx-vdi-hyp176.ebi.ac.uk","hx-vdi-hyp175.ebi.ac.uk"
+
 
 
     [Console]::ResetColor()
