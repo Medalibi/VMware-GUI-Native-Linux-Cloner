@@ -1,11 +1,11 @@
 # VMware-GUI-Native-Linux-Cloner
-A PowerShell script that help with the Native Linux VM deployment (Ubuntu) on a VMware Horizon environment.
+A PowerShell script that helps with the Native Linux VM deployment (Ubuntu) on a VMware Horizon environment.
 
-This script should be preferably executed via the VMware vSphere PowerCLI Terminal (Been Tested on VMware vSphere PowerCLI 5.8 Release1).
+This script should preferably be executed via the VMware vSphere PowerCLI Terminal (Been Tested on VMware vSphere PowerCLI 5.8 Release1).
 
-There is a lot of personalized entries that has been filled in for the original environment. They maybe need to be updated to reflect alternative setup.
+There are a lot of personalized entries that have been filled in for the original environment. They may need to be updated to reflect alternative setup.
 
-The Script also support other operations we found very useful when running VMware Horizon pools:
+The script also supports other operations we found very useful when running VMware Horizon pools:
 
 1) Power On
 
