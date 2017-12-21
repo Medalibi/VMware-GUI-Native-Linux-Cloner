@@ -1374,7 +1374,7 @@ function main {
             Write-Host -ForeGroundColor Red "#################################################################################`n"
             $outputBox.AppendText("#################################################################################`r`n`r`n")
 
-            Start-sleep -s 2
+            #Start-sleep -s 2
             $deploymentloop = $lastgoodi
             continue
             #break
@@ -1456,7 +1456,7 @@ function main {
 
         add-uniquepcipassthroughdevice $newvm $GPUID $destHost
 
-        Start-Sleep -s 5
+        Start-Sleep -s 1
 
         $g=get-view -viewtype VirtualMachine -filter @{"Name"=$destVMName}
         $h=$g.config.hardware.device | ?{$_.Backing -like "*Pass*"}
@@ -1477,7 +1477,7 @@ function main {
 
         foreach ($vm in (get-vm $newvm)) {get-vmresourceconfiguration $vm | set-vmresourceconfiguration -MemReservationMB $vm.MemoryMB}
 
-        Start-Sleep -s 2
+        #Start-Sleep -s 2
 
         # Start the VM
         Start-VM $newvm
@@ -1485,7 +1485,7 @@ function main {
         LogWrite "[INFO] $time- Starting the VM $newvm.`n"
         $outputBox.AppendText("[INFO] Starting the VM $newvm.`r`n")
 
-        Start-Sleep -s 2
+        Start-Sleep -s 1
 
         # Connect the VM to the network
         $NetworkAdapter = Get-NetworkAdapter -VM $newvm
@@ -1627,7 +1627,7 @@ function main {
     if ($deploymentloop -gt 1)
     {
 
-    Start-Sleep -s 8
+    Start-Sleep -s 5
     Write-Host -ForeGroundColor Green "`n#################################################################"
     $outputBox.AppendText("#################################################################`r`n")
     $outputBox.AppendText("[INFO] Gathering IP addresses...`r`n`r`n")
@@ -2026,7 +2026,7 @@ function main {
 
         add-uniquepcipassthroughdevice $VMName $GPUID $destHost
 
-        Start-Sleep -s 2
+        Start-Sleep -s 1
 
         $g=get-view -viewtype VirtualMachine -filter @{"Name"=$VMName}
         $h=$g.config.hardware.device | ?{$_.Backing -like "*Pass*"}
@@ -2049,7 +2049,7 @@ function main {
         "-----------------------------------------------------"
         #foreach ($vm in (get-vm $newvm)) {get-vmresourceconfiguration $vm | set-vmresourceconfiguration -MemReservationMB $vm.MemoryMB}
 
-        Start-Sleep -s 3
+        #Start-Sleep -s 3
 
         # Start the VM
 	    Start-VM $VMName
@@ -2185,7 +2185,7 @@ function main {
         $time = date -Format hh:mm:ss.ms
         LogWrite "[INFO] $time- Adding VM $VMName Network adpater.`n"
         New-NetworkAdapter -VM $newvm -Type Vmxnet3 -NetworkName "VLAN 513 - Training LAN (blade)" -WakeOnLan:$true -StartConnected:$true -Confirm:$false
-        Start-sleep -s 2
+        #Start-sleep -s 1
         Start-VM $VMName
         $outputBox.AppendText("[INFO] VM $VMNames Network Card added.`r`n")
         Write-Host -ForeGroundColor Green "[INFO] VM $VMNames Network Card added."
@@ -2280,38 +2280,87 @@ function main {
 
       }
 
-################################################################################################################################################################################################################
-################################################################################################################################################################################################################
-
+#########################################################################################################################################################################################
+#########################################################################################################################################################################################
+#########################################################################################################################################################################################
+#########################################################################################################################################################################################
        "(14). Migrate VMs equally between Hosts"
       {
         $VMName = $destVMName
-
+        $time = date -Format dd/MM/yy`thh:mm:ss.m
         write-host -ForeGroundColor Yellow "`n############ Resources Organisation Nbr: $j   On: $VMName      ##########`n"
         $outputBox.AppendText("`r`n############ Resources Organisation Nbr: $j   On: $VMName     ##########`r`n")
-        $time = date -Format dd/MM/yy`thh:mm:ss.m
         LogWrite "[INFO] $time- Organizing the resources of the VM: $VMName started.`n"
-        $newvm = Get-vm $VMName
-        $destHost = $newvm.VMHost.Name
-
         Get-VM $VMName | where { $_.PowerState –eq "PoweredOn" } | Stop-VM –confirm:$false
 
-        Write-Host -ForeGroundColor Green "[INFO] Testing the VM current host $destHost... `n"
-        $GpuConf=get-vmhost $destHost | get-vm | get-view
+        foreach ($vm in (get-vm $VMName)) {get-vmresourceconfiguration $vm | set-vmresourceconfiguration -MemReservationMB $vm.MemoryMB}
+        $GPUID = "null"
+        get-vm $VMName | get-passthroughdevice | remove-passthroughdevice -Confirm:$false
+
+        Write-Host -ForeGroundColor Green "[INFO] Testing the VM current host $currentHost... `n"
+        $newvm = Get-vm $VMName
+        $currentHost = $newvm.VMHost.Name
+        $ObjHost = Get-EsxCli -VMHost $currentHost
+        $GPUsIdslist = $ObjHost.hardware.pci.list("0x300") | Where-Object {$_.ModuleName -eq "pciPassthru"} | select -Property Address
+        [array]::Reverse($GPUsIdslist)
+
+        
+        $GpuConf=get-vmhost $currentHost | get-vm | get-view
         $IdList = $GpuConf.config.hardware.device | ?{$_.Backing -is "VMware.Vim.VirtualPCIPassthroughDeviceBackingInfo"} | Select-Object  -Property @{N="Id";E={$_.Backing.Id}}
-        $OnVMlist = Get-VMHost $destHost | Get-VM | Where-Object {$_.PowerState -eq "PoweredOn"}
-        $OnlineVMcount = $OnVMlist.count
+        $SlotLeft = 4 - $IdList.Id.Count
+        Write-Host -ForeGroundColor Yellow "[DEBUG] Current host '$currentHost' has  # $SlotLeft #  GPU slots available.`r`n"
+        $outputBox.AppendText("[DEBUG] Current host '$currentHost' has  # $SlotLeft #  GPU slots available.`r`n")
 
+        $OnVMlist=Get-VMHost $currentHost | Get-VM | Where-Object {$_.PowerState -eq "PoweredOn"}
+        $OnlineVMcount=$OnVMlist.count
+        
+        if ($SlotLeft -eq 0 -and $OnlineVMcount -le 4)
+######################################### Something Wrong! Fixing it now... The case of having offline VMs with PCI device connected to them #############################################
 
-
-
-
-        if ($IdList.Id.Length -eq 4 -and $OnlineVMcount -ge 4)
-######################################### Migration !!!!!! Migarating the VM to a suitable ESXi hosts
         {
-            Write-Host -ForeGroundColor Yellow "[DEBUG] Current ESXi host: $destHost is full. Migrating VM to an other ESXI Host..."
-            $outputBox.AppendText("[DEBUG] Current ESXi host: $destHost is full. Migrating VM to an other ESXI Host...`r`n")
-            LogWrite "[DEBUG] Current ESXi host: $destHost is full. Migrating VM to an other ESXI Host...`n"
+         $OffVMlist = Get-VMHost $currentHost | Get-VM | Where-Object {$_.PowerState -eq "PoweredOff"}
+         Write-Host -ForeGroundColor Yellow "[DEBUG] Removing PCI device from Offline VMs of ESXi host $currentHost..."
+         $outputBox.AppendText("[DEBUG] Removing PCI device from Offline VMs of ESXi host $currentHost...`r`n")
+         LogWrite "[DEBUG] Removing PCI device from Offline VMs of ESXi host $currentHost...`n"
+         foreach ($vOff in $OffVMlist)
+         {
+            foreach ($vm in (get-vm $vOff)) {get-vmresourceconfiguration $vm | set-vmresourceconfiguration -MemReservationMB $vm.MemoryMB}
+            get-vm $vOff | get-passthroughdevice | remove-passthroughdevice -Confirm:$false
+         }
+         # Trying again while the fix beening applied
+         Write-Host -ForeGroundColor Green "[INFO] Trying again while the fix has beening applied..."
+         $outputBox.AppendText("[INFO] Trying again while the fix has beening applied...`r`n")
+         LogWrite "[INFO] Trying again while the fix has beening applied...`n"
+         $destHost=$currentHost
+        }
+
+        elseif ($SlotLeft -gt 0 -and $OnlineVMcount -gt 4)
+######################################### Listing the extra VMs using resources powered on the hosts ##################################################################################
+
+        {
+         Write-Host -ForeGroundColor Yellow "[DEBUG] There is Extra VMs Powered on in the host $currentHost :`r`n`r`n"
+         $outputBox.AppendText("[DEBUG] There is Extra VMs Powered on in the host $currentHost :`r`n`r`n")
+         LogWrite "[DEBUG] There is Extra VMs Powered on in the host $currentHost :`n`n"
+
+         $OnVMlist = Get-VMHost $currentHost | Get-VM | Where-Object {$_.PowerState -eq "PoweredOn"}
+         $OnVMNAmelist = $OnVMlist.Name
+         Write-Host -ForeGroundColor Yellow ($OnVMNAmelist | Format-Table | Out-String)
+         $outputBox.AppendText(($OnVMNAmelist | Format-Table | Out-String))
+         LogWrite ($OnVMNAmelist | Format-Table | Out-String)
+         #$operationloop = $i
+         $destHost=$currentHost
+        }
+
+
+        if ($SlotLeft -eq 0)
+######################################### No available GPUs for the VM to use; Migarating the VM to a suitable ESXi hosts #################################################################
+
+        {
+            Write-Host -ForeGroundColor Yellow "[DEBUG] Current ESXi host: $currentHost is full. Migrating VM to an other ESXI Host..."
+            $outputBox.AppendText("[DEBUG] Current ESXi host: $currentHost is full. Migrating VM to an other ESXI Host...`r`n")
+            LogWrite "[DEBUG] Current ESXi host: $currentHost is full. Migrating VM to an other ESXI Host...`n"
+
+
             $GPUID = $null
             $destHost = $null
 
@@ -2325,9 +2374,9 @@ function main {
 
                 if ($IdList.Id.Length -ge 4)
                 {
-                    Write-Host -ForeGroundColor Yellow "[DEBUG] The ESXi host: $Hosting is full"
-                    $outputBox.AppendText("[DEBUG] The ESXi host: $Hosting is full`r`n")
-                    LogWrite "[DEBUG] The ESXi host: $Hosting is full`n"
+                    Write-Host -ForeGroundColor Yellow "[DEBUG] The ESXi host: $Hosting is full."
+                    $outputBox.AppendText("[DEBUG] The ESXi host: $Hosting is full.`r`n")
+                    LogWrite "[DEBUG] The ESXi host: $Hosting is full.`n"
                     continue
                 }
                 else
@@ -2350,9 +2399,9 @@ function main {
 
                 if ($IdList.Id.Length -ge 4)
                 {
-                    Write-Host -ForeGroundColor Yellow "[DEBUG] The ESXi host: $Hosting is full"
-                    $outputBox.AppendText("[DEBUG] The ESXi host: $Hosting is full`r`n")
-                    LogWrite "[DEBUG] The ESXi host: $Hosting is full`n"
+                    Write-Host -ForeGroundColor Yellow "[DEBUG] The ESXi host: $Hosting is full."
+                    $outputBox.AppendText("[DEBUG] The ESXi host: $Hosting is full.`r`n")
+                    LogWrite "[DEBUG] The ESXi host: $Hosting is full.`n"
                     continue
                 }
                 else
@@ -2381,86 +2430,32 @@ function main {
                 Write-Host -ForeGroundColor Red "#################################################################################`n"
                 $outputBox.AppendText("#################################################################################`r`n`r`n")
 
-                Start-sleep -s 2
+                #Start-sleep -s 2
                 $operationloop = $lastgoodi
                 continue
                 #break
             }
             # VM Migration happens now
             Get-VM $VMName | Move-VM -Destination (Get-VMHost $destHost)
-
             Write-Host -ForeGroundColor Green "[INFO] The VM $VMName has been migrated. Adding PCI device..."
             $outputBox.AppendText("[INFO] The VM $VMName has been migrated. Adding PCI device...`r`n")
             LogWrite "[INFO] The VM $VMName has been migrated. Adding PCI device...`n"
-
         }
 
+        elseif ($SlotLeft -gt 0)
+######################################### GOOD !! Adding a PCI device. The VM stays in the current host and then gets a GPU PCI devie added to it #######################################
 
-
-
-
-
-        elseif ($IdList.Id.Length -lt 4 -and $OnlineVMcount -lt 4 )
-######################################### GOOD !! Very good condusion to add a PCI device. The VM stays in the current host and then gets a GPU PCI devie added to it
         {
-            Write-Host -ForeGroundColor Green "[INFO] Current ESXi host: $destHost is good to host the VM. Adding GPU PCI device to the VM $VMName..."
-            $outputBox.AppendText("[INFO] Current ESXi host: $destHost is good to host the VM. Adding GPU PCI device to the VM $VMName...`r`n")
-            LogWrite "[INFO] Current ESXi host: $destHost is good to host the VM. Adding GPU PCI device to the VM $VMName...`n"
+            Write-Host -ForeGroundColor Green "[INFO] Current ESXi host: $currentHost is good to host the VM. Adding GPU PCI device to the VM $VMName..."
+            $outputBox.AppendText("[INFO] Current ESXi host: $currentHost is good to host the VM. Adding GPU PCI device to the VM $VMName...`r`n")
+            LogWrite "[INFO] Current ESXi host: $currentHost is good to host the VM. Adding GPU PCI device to the VM $VMName...`n"
+            $destHost=$currentHost
         }
 
 
+######################################### Adding GPU PCI card via passthrough ############################################################################################################
+#########################################################################################################################################################################################
 
-
-
-
-
-        elseif ($IdList.Id.Length -ge 4 -and $OnlineVMcount -lt 4)
-######################################### Something Wrong!!! The case of having offline VMs with PCI device connected to them
-        {
-         $OffVMlist = Get-VMHost $destHost | Get-VM | Where-Object {$_.PowerState -eq "PoweredOff"}
-
-         Write-Host -ForeGroundColor Yellow "[DEBUG] Removing PCI device from Offline VMs of ESXi host $destHost..."
-         $outputBox.AppendText("[DEBUG] Removing PCI device from Offline VMs of ESXi host $destHost...`r`n")
-         LogWrite "[DEBUG] Removing PCI device from Offline VMs of ESXi host $destHost...`n"
-         foreach ($v in $OffVMlist)
-         {
-            foreach ($vm in (get-vm $v)) {get-vmresourceconfiguration $vm | set-vmresourceconfiguration -MemReservationMB $vm.MemoryMB}
-            get-vm $v | get-passthroughdevice | remove-passthroughdevice -Confirm:$false
-         }
-
-         # Trying again while the fix beening applied
-         Write-Host -ForeGroundColor Green "[INFO] Trying again while the fix has beening applied..."
-         $outputBox.AppendText("[INFO] Trying again while the fix has beening applied...`r`n")
-         LogWrite "[INFO] Trying again while the fix has beening applied...`n"
-         continue
-        }
-
-
-
-
-
-
-        else
-######################################### Listing the extra VMs using resources powered on in the hosts
-        {
-         Write-Host -ForeGroundColor Yellow "[DEBUG] There is Extra VMs Powered on in the host $destHost :"
-         $outputBox.AppendText("[DEBUG] Removing PCI device from Offline VMs of ESXi host $destHost :`r`n")
-         LogWrite "[DEBUG] Removing PCI device from Offline VMs of ESXi host $destHost :`n"
-
-         $OnVMlist = Get-VMHost $destHost | Get-VM | Where-Object {$_.PowerState -eq "PoweredOn"}
-         $OnVMNAmelist = $OnVMlist.Name
-
-         Write-Host -ForeGroundColor Yellow ($OnVMNAmelist | Format-Table | Out-String)
-         $outputBox.AppendText(($OnVMNAmelist | Format-Table | Out-String))
-         LogWrite ($OnVMNAmelist | Format-Table | Out-String)
-        }
-
-
-
-
-
-
-######################################### Adding GPU PCI card via passthrough
         $ObjHost = Get-EsxCli -VMHost $destHost
         $GPUsIdslist = $ObjHost.hardware.pci.list("0x300") | Where-Object {$_.ModuleName -eq "pciPassthru"} | select -Property Address
         [array]::Reverse($GPUsIdslist)
@@ -2468,11 +2463,12 @@ function main {
         $GpuConf=get-vmhost $destHost | get-vm | get-view
         $IdList = $GpuConf.config.hardware.device | ?{$_.Backing -is "VMware.Vim.VirtualPCIPassthroughDeviceBackingInfo"} | Select-Object  -Property @{N="Id";E={$_.Backing.Id}}
         $SlotLeft = 4 - $IdList.Id.Count
+
         "-----------------------------------------------------"
-        Write-Host -ForeGroundColor Yellow "[DEBUG] The Host '$destHost' has  # $SlotLeft #  GPU slots left."
-        $outputBox.AppendText("[DEBUG] The Host '$destHost' has  # $SlotLeft #  GPU slots left.`r`n")
+        Write-Host -ForeGroundColor Yellow "[DEBUG] The Host '$destHost' has  # $SlotLeft #  GPU slots available."
+        $outputBox.AppendText("[DEBUG] The Host '$destHost' has  # $SlotLeft #  GPU slots available.`r`n")
         $time = date -Format dd/MM/yy`thh:mm:ss.m
-        LogWrite "[DEBUG] The Host '$destHost' has  # $SlotLeft #  GPU slots left.'"
+        LogWrite "[DEBUG] The Host '$destHost' has  # $SlotLeft #  GPU slots available.'"
         "-----------------------------------------------------"
         foreach ($Idline in $GPUsIdslist)
       {
@@ -2496,7 +2492,7 @@ function main {
         LogWrite "[INFO] $time- PCI Device with ID '$GPUID' from the host '$destHost' is going to be added to the VM '$destVMName'"
         "-----------------------------------------------------"
         add-uniquepcipassthroughdevice $newvm $GPUID $destHost
-        Start-Sleep -s 2
+        Start-Sleep -s 1
 
         $g=get-view -viewtype VirtualMachine -filter @{"Name"=$destVMName}
         $h=$g.config.hardware.device | ?{$_.Backing -like "*Pass*"}
@@ -2505,7 +2501,6 @@ function main {
         $device = Get-PassthroughDevice -VM $gpuvm -Type Pci
         $devname = $device.Name
         $devid = $h.backing.Id
-
         "-----------------------------------------------------"
         Write-Host -ForeGroundColor Green "[INFO] PCI Device '$devname' with ID: ' $devid ' has been added to the VM '$newvm'`n"
         $outputBox.AppendText("[INFO] PCI Device '$devname' with ID: ' $devid ' has been added to the VM '$newvm'`r`n`n")
@@ -2514,15 +2509,10 @@ function main {
         "-----------------------------------------------------"
         foreach ($vm in (get-vm $newvm)) {get-vmresourceconfiguration $vm | set-vmresourceconfiguration -MemReservationMB $vm.MemoryMB}
 
-
-
-
-
-
-######################################### Starting the VM to not confuse it for an offline VM holding a PCI device
-        Start-sleep -s 2
+######################################### Starting the VM to not confuse it for an offline VM holding a PCI device #########################################################################
+############################################################################################################################################################################################
+        #Start-sleep -s 2
         Start-VM $VMName
-        
         $outputBox.AppendText("[INFO] VM $VMNames Resources organized. Moving to next one.`r`n")
         $outputBox.AppendText("#################################################################################`r`n`r`n")
         Write-Host -ForeGroundColor Green "VM $VMNames Resources organized. Moving to next one."
@@ -2530,11 +2520,11 @@ function main {
         $time = date -Format hh:mm:ss.ms
         LogWrite "[INFO] $time- VM $VMNames Resources organized. Moving to next one.`n"
         LogWrite "#################################################################################`n"
-
-
        }
-################################################################################################################################################################################################################
-################################################################################################################################################################################################################
+############################################################################################################################################################################################
+############################################################################################################################################################################################
+############################################################################################################################################################################################
+############################################################################################################################################################################################
 
         "(15). Clone VMs for an Inactive pool"
        {
@@ -2632,7 +2622,7 @@ function main {
             Write-Host -ForeGroundColor Red "#################################################################################`n"
             $outputBox.AppendText("#################################################################################`r`n`r`n")
 
-            Start-sleep -s 2
+            #Start-sleep -s 2
             $operationloop = $lastgoodi
             continue
             #break
@@ -2716,7 +2706,7 @@ function main {
 
         add-uniquepcipassthroughdevice $newvm $GPUID $destHost
 
-        Start-Sleep -s 5
+        Start-Sleep -s 1
 
         $g=get-view -viewtype VirtualMachine -filter @{"Name"=$destVMName}
         $h=$g.config.hardware.device | ?{$_.Backing -like "*Pass*"}

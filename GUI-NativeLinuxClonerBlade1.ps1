@@ -17,7 +17,7 @@ $Form.AutoScaleMode = [System.Windows.Forms.AutoScaleMode]::Font
 $Form.AutoSize = $True
 $Form.StartPosition = "CenterScreen"                                              #loads the window in the center of the screen
 #$Form.FormBorderStyle = [System.Windows.Forms.FormBorderStyle]::FixedToolWindow  #Make the window border fixed
-$Form.Text = "VMWare Horizon External Native Linux Pool Deployment Wizzard (ESXi Blade3)"                #window description
+$Form.Text = "VMWare Horizon Native Linux Pool Deployment Room 1 Wizzard (ESXi Blade1)"                #window description
 #$form.Topmost = $True
 $form.DataBindings.DefaultDataSourceUpdateMode = [System.Windows.Forms.DataSourceUpdateMode]::OnValidation
 $Icon = [system.drawing.icon]::ExtractAssociatedIcon($PSHOME + "\powershell.exe")
@@ -383,7 +383,7 @@ $vmnbr_InputBox.Location = New-Object System.Drawing.Size(15,25)
 $vmnbr_InputBox.Size = New-Object System.Drawing.Size(50,50)
 $vmnbr_InputBox.TabIndex = 9
 $vmnbr_InputBox.Text
-$vmnbr_InputBox.Text = "8"
+$vmnbr_InputBox.Text = "32"
 $vmnbr_groupBox.Controls.Add($vmnbr_InputBox)
 
 # VM Clones number label
@@ -625,7 +625,7 @@ $vmendnbr_InputBox.Location = New-Object System.Drawing.Size(70,85)
 $vmendnbr_InputBox.Size = New-Object System.Drawing.Size(50,50)
 $vmendnbr_InputBox.TabIndex = 19
 $vmendnbr_InputBox.Text
-$vmendnbr_InputBox.Text = "8"
+$vmendnbr_InputBox.Text = "32"
 $vmrng_groupBox.Controls.Add($vmendnbr_InputBox)
 
 # VM Clones end range label
@@ -712,7 +712,7 @@ $btn_CANCEL.Add_Click({
     {
         Write-Host -ForeGroundColor Yellow "[DEBUG] Deployment Canceled. Exiting..."
         $outputBox.AppendText("[DEBUG] Deployment Canceled. Exiting...`r`n")
-        #Start-Sleep -s 1
+        Start-Sleep -s 1
         $Form.Close()
     }
 })
@@ -868,7 +868,7 @@ $VMOp_Button.Add_Click({
     $VMOps_groupBox.Controls.Add($VMOps_DropDownBox)
     $VMOps_List = @("(1). Power On", "(2). Power Off", "(3) Shut VM Guest", "(4). Restart VM", "(5). Restart VM Guest", "(6). Delete VM", "(7). Add GPU PCI Device", "(8). Install Horizon Agent",
     "(9). Add Network Card", "(10). Connect Network Card", "(11). Get VM IP Address", "(12). Set Linux VM Hostname","(13). Install Nvidia Driver on Linux VM",
-    "(14). Migrate VMs equally between Hosts", "(15). Clone VMs for an Inactive pool", "(16) Remove GPU from VM", "(17). Run a Linux Command")
+    "(14). Migrate VMs equally between Hosts", "(15). Clone VMs for an Inactive pool", "(16) Remove GPU from VM", "(17). Change network VLAN configuration")
     foreach ($VMOpsstr in $VMOps_List) {
                       $VMOps_DropDownBox.Items.Add($VMOpsstr)
                               } #end foreach
@@ -1224,21 +1224,13 @@ function main {
     
     $destFolder = "/home/$guestUser/"
 
-    #$destHostList1 = "hx-vdi-hyp159.ebi.ac.uk", "hx-vdi-hyp160.ebi.ac.uk", "hx-vdi-hyp161.ebi.ac.uk", "hx-vdi-hyp162.ebi.ac.uk", "hx-vdi-hyp163.ebi.ac.uk",
-    # "hx-vdi-hyp164.ebi.ac.uk", "hx-vdi-hyp165.ebi.ac.uk", "hx-vdi-hyp166.ebi.ac.uk", "hx-vdi-hyp167.ebi.ac.uk", "hx-vdi-hyp168.ebi.ac.uk", "hx-vdi-hyp169.ebi.ac.uk",
-    # "hx-vdi-hyp170.ebi.ac.uk", "hx-vdi-hyp171.ebi.ac.uk", "hx-vdi-hyp172.ebi.ac.uk", "hx-vdi-hyp173.ebi.ac.uk", "hx-vdi-hyp174.ebi.ac.uk"
+    $destHostList1 = "hx-vdi-hyp159.ebi.ac.uk", "hx-vdi-hyp160.ebi.ac.uk", "hx-vdi-hyp161.ebi.ac.uk", "hx-vdi-hyp162.ebi.ac.uk",
+    "hx-vdi-hyp163.ebi.ac.uk", "hx-vdi-hyp164.ebi.ac.uk", "hx-vdi-hyp165.ebi.ac.uk", "hx-vdi-hyp166.ebi.ac.uk"
 
-    #$destHostList2 = "hx-vdi-hyp174.ebi.ac.uk", "hx-vdi-hyp173.ebi.ac.uk", "hx-vdi-hyp172.ebi.ac.uk", "hx-vdi-hyp171.ebi.ac.uk", "hx-vdi-hyp170.ebi.ac.uk",
-    #  "hx-vdi-hyp169.ebi.ac.uk", "hx-vdi-hyp168.ebi.ac.uk", "hx-vdi-hyp167.ebi.ac.uk", "hx-vdi-hyp166.ebi.ac.uk", "hx-vdi-hyp165.ebi.ac.uk",
-    #   "hx-vdi-hyp164.ebi.ac.uk", "hx-vdi-hyp163.ebi.ac.uk", "hx-vdi-hyp162.ebi.ac.uk", "hx-vdi-hyp161.ebi.ac.uk", "hx-vdi-hyp160.ebi.ac.uk", "hx-vdi-hyp159.ebi.ac.uk"
-
-
-    $destHostList1 = "hx-vdi-hyp175.ebi.ac.uk","hx-vdi-hyp176.ebi.ac.uk","hx-vdi-hyp177.ebi.ac.uk"
-    
     $destHostList2 = $destHostList1.Clone()
     [array]::Reverse($destHostList2)
-    #$destHostList2 = "hx-vdi-hyp177.ebi.ac.uk","hx-vdi-hyp176.ebi.ac.uk","hx-vdi-hyp175.ebi.ac.uk"
-
+    #$destHostList2 = "hx-vdi-hyp166.ebi.ac.uk", "hx-vdi-hyp165.ebi.ac.uk","hx-vdi-hyp164.ebi.ac.uk", "hx-vdi-hyp163.ebi.ac.uk", "hx-vdi-hyp162.ebi.ac.uk", 
+    #"hx-vdi-hyp161.ebi.ac.uk", "hx-vdi-hyp160.ebi.ac.uk", "hx-vdi-hyp159.ebi.ac.uk"
 
 
     [Console]::ResetColor()
@@ -1464,7 +1456,7 @@ function main {
 
         add-uniquepcipassthroughdevice $newvm $GPUID $destHost
 
-        Start-Sleep -s 2
+        Start-Sleep -s 1
 
         $g=get-view -viewtype VirtualMachine -filter @{"Name"=$destVMName}
         $h=$g.config.hardware.device | ?{$_.Backing -like "*Pass*"}
@@ -1489,12 +1481,11 @@ function main {
 
         #Configure VLAN setting
         $NetworkAdapter = Get-NetworkAdapter -VM $newvm
-        Set-NetworkAdapter -NetworkAdapter $NetworkAdapter -NetworkName 'VLAN 515 (blade)' -Confirm:$false 
+        Set-NetworkAdapter -NetworkAdapter $NetworkAdapter -NetworkName 'VLAN 514 (blade)' -Confirm:$false 
         $time = date -Format dd/MM/yy`thh:mm:ss.m
         Write-Host -ForeGroundColor Green "[INFO] Link the VM $newvm to the appropriate VLAN.`n"
         LogWrite "[INFO] $time- Link the VM $newvm to the appropriate VLAN.`n"
         $outputBox.AppendText("[INFO] Link the VM $newvm to the appropriate VLAN.`r`n")
-
 
         # Start the VM
         Start-VM $newvm
@@ -1705,9 +1696,11 @@ function main {
 
     }
 
-#############################################################################################################################################################################
-############################# VM Operations code ############################################################################################################################
-#############################################################################################################################################################################
+
+
+########################################################################################################
+############################# VM Operations code #######################################################
+########################################################################################################
 
     elseif ($global:init_vmops -eq $true -and $global:vmop -eq $true)
     {
@@ -1840,20 +1833,14 @@ function main {
 
     $destFolder = "/home/$guestUser/"
 
-    #$destHostList1 = "hx-vdi-hyp159.ebi.ac.uk", "hx-vdi-hyp160.ebi.ac.uk", "hx-vdi-hyp161.ebi.ac.uk", "hx-vdi-hyp162.ebi.ac.uk", "hx-vdi-hyp163.ebi.ac.uk",
-    # "hx-vdi-hyp164.ebi.ac.uk", "hx-vdi-hyp165.ebi.ac.uk", "hx-vdi-hyp166.ebi.ac.uk", "hx-vdi-hyp167.ebi.ac.uk", "hx-vdi-hyp168.ebi.ac.uk", "hx-vdi-hyp169.ebi.ac.uk",
-    # "hx-vdi-hyp170.ebi.ac.uk", "hx-vdi-hyp171.ebi.ac.uk", "hx-vdi-hyp172.ebi.ac.uk", "hx-vdi-hyp173.ebi.ac.uk", "hx-vdi-hyp174.ebi.ac.uk"
+    $destHostList1 = "hx-vdi-hyp159.ebi.ac.uk", "hx-vdi-hyp160.ebi.ac.uk", "hx-vdi-hyp161.ebi.ac.uk", "hx-vdi-hyp162.ebi.ac.uk",
+    "hx-vdi-hyp163.ebi.ac.uk", "hx-vdi-hyp164.ebi.ac.uk", "hx-vdi-hyp165.ebi.ac.uk", "hx-vdi-hyp166.ebi.ac.uk"
 
-    #$destHostList2 = "hx-vdi-hyp174.ebi.ac.uk", "hx-vdi-hyp173.ebi.ac.uk", "hx-vdi-hyp172.ebi.ac.uk", "hx-vdi-hyp171.ebi.ac.uk", "hx-vdi-hyp170.ebi.ac.uk",
-    #  "hx-vdi-hyp169.ebi.ac.uk", "hx-vdi-hyp168.ebi.ac.uk", "hx-vdi-hyp167.ebi.ac.uk", "hx-vdi-hyp166.ebi.ac.uk", "hx-vdi-hyp165.ebi.ac.uk",
-    #   "hx-vdi-hyp164.ebi.ac.uk", "hx-vdi-hyp163.ebi.ac.uk", "hx-vdi-hyp162.ebi.ac.uk", "hx-vdi-hyp161.ebi.ac.uk", "hx-vdi-hyp160.ebi.ac.uk", "hx-vdi-hyp159.ebi.ac.uk"
-
-    $destHostList1 = "hx-vdi-hyp175.ebi.ac.uk","hx-vdi-hyp176.ebi.ac.uk","hx-vdi-hyp177.ebi.ac.uk"
-    
     $destHostList2 = $destHostList1.Clone()
     [array]::Reverse($destHostList2)
-    #$destHostList2 = "hx-vdi-hyp177.ebi.ac.uk","hx-vdi-hyp176.ebi.ac.uk","hx-vdi-hyp175.ebi.ac.uk"
 
+    #$destHostList2 = "hx-vdi-hyp166.ebi.ac.uk", "hx-vdi-hyp165.ebi.ac.uk","hx-vdi-hyp164.ebi.ac.uk", "hx-vdi-hyp163.ebi.ac.uk", "hx-vdi-hyp162.ebi.ac.uk", 
+    #"hx-vdi-hyp161.ebi.ac.uk", "hx-vdi-hyp160.ebi.ac.uk", "hx-vdi-hyp159.ebi.ac.uk"
 
     $VMOpswelcome = $VMOps_DropDownBox.SelectedItem.ToString()
     Write-Host -ForeGroundColor Green "#################################################################"
@@ -1885,7 +1872,7 @@ function main {
         $time = date -Format dd/MM/yy`thh:mm:ss.m
         LogWrite "[INFO] $time- Working on the VM: $VMName.`n"
 
-        ##########################################################################################################################################################################################
+        #####################################################################
         #
         #
         # "(1). Power On", "(2). Power Off", "(3) Shut VM Guest", "(4). Restart VM", "(5). Restart VM Guest", "(6). Delete VM", "(7). Add GPU PCI Device", "(8). Install Horizon Agent",
@@ -1893,7 +1880,7 @@ function main {
         # "(14). Migrate VMs equally between Hosts", "(15). Clone VMs for an Inactive pool", "(16) Remove GPU from VM", "(17). Run a Linux Command"
         #
         #
-        ##########################################################################################################################################################################################
+        #####################################################################
 
         switch ($VMOps_DropDownBox.SelectedItem.ToString())
     {
@@ -1909,7 +1896,6 @@ function main {
         LogWrite "[INFO] $time- Starting VM: $VMName."
 
       }
-      ##########################################################################################################################################################################################
       "(2). Power Off"
       {
         write-host -ForeGroundColor Green "[INFO] Stopping VM $VMName..."
@@ -1920,7 +1906,6 @@ function main {
         $time = date -Format dd/MM/yy`thh:mm:ss.m
         LogWrite "[INFO] $time- Shutting down VM: $VMName."
       }
-      ##########################################################################################################################################################################################
       "(3) Shut VM Guest"
       {
         write-host -ForeGroundColor Green "[INFO] Shutting down VM $VMName Guest..."
@@ -1931,7 +1916,6 @@ function main {
         $time = date -Format dd/MM/yy`thh:mm:ss.m
         LogWrite "[INFO] $time- Shutting down VMGuest of: $VMName."
       }
-      ##########################################################################################################################################################################################
       "(4). Restart VM"
       {
         write-host -ForeGroundColor Green "[INFO] Restarting VM $VMName..."
@@ -1942,7 +1926,6 @@ function main {
         $time = date -Format dd/MM/yy`thh:mm:ss.m
         LogWrite "[INFO] $time- Restarting VM: $VMName."
       }
-      ##########################################################################################################################################################################################
       "(5). Restart VM Guest"
       {
         write-host -ForeGroundColor Green "[INFO] Restarting VM $VMName Guest..."
@@ -1953,7 +1936,6 @@ function main {
         $time = date -Format dd/MM/yy`thh:mm:ss.m
         LogWrite "[INFO] $time- Restarting VMGuest of: $VMName."
       }
-      ##########################################################################################################################################################################################
       "(6). Delete VM"
       {
 
@@ -1975,24 +1957,39 @@ function main {
         LogWrite "[INFO] $time- VM: $VMName deleted."
 
        }
-       ##########################################################################################################################################################################################
+
+
+
+
+
        "(7). Add GPU PCI Device"
       {
-        # Add GPU PCI device to VMs currently located in a host that handle it
+        
+        # Add PCi device GPU
         Get-VM $VMName | where { $_.PowerState –eq "PoweredOn" } | Stop-VM –confirm:$false
+
         foreach ($vm in (get-vm $VMName)) {get-vmresourceconfiguration $vm | set-vmresourceconfiguration -MemReservationMB $vm.MemoryMB}
+
         $GPUID = "null"
+
         get-vm $VMName | get-passthroughdevice | remove-passthroughdevice -Confirm:$false
+
         $newvm = Get-vm $VMName
+
         $destHost = $newvm.VMHost.Name
+
         $ObjHost = Get-EsxCli -VMHost $destHost
         $GPUsIdslist = $ObjHost.hardware.pci.list("0x300") | Where-Object {$_.ModuleName -eq "pciPassthru"} | select -Property Address
         [array]::Reverse($GPUsIdslist)
 
-        #Get VMs from a host
+        #get VMs from a host
+
         $GpuConf=get-vmhost $destHost | get-vm | get-view
+
         $IdList = $GpuConf.config.hardware.device | ?{$_.Backing -is "VMware.Vim.VirtualPCIPassthroughDeviceBackingInfo"} | Select-Object  -Property @{N="Id";E={$_.Backing.Id}}
+
         $SlotLeft = 4 - $IdList.Id.Count
+
         "-----------------------------------------------------"
         Write-Host -ForeGroundColor Yellow "[DEBUG] The Host '$destHost' has  # $SlotLeft #  GPU slots left."
         $outputBox.AppendText("[DEBUG] The Host '$destHost' has  # $SlotLeft #'  GPU slots left.`r`n")
@@ -2015,6 +2012,7 @@ function main {
                $GPUID = $GPUsIdslist[3].Address
             }
         }
+
         if ($GPUID.Equals("null"))
         {
             "-----------------------------------------------------"
@@ -2025,23 +2023,31 @@ function main {
             "-----------------------------------------------------"
             #$operationloop = $i
             continue
+
         }
+
         "-----------------------------------------------------"
         Write-Host -ForeGroundColor Green "[INFO] PCI Device with ID '$GPUID' from the host '$destHost' is going to be added to the VM '$destVMName'"
         $outputBox.AppendText("[INFO] PCI Device with ID '$GPUID' from the host '$destHost' is going to be added to the VM '$destVMName'`r`n")
         $time = date -Format dd/MM/yy`thh:mm:ss.m
         LogWrite "[INFO] $time- PCI Device with ID '$GPUID' from the host '$destHost' is going to be added to the VM '$destVMName'"
         "-----------------------------------------------------"
+
         add-uniquepcipassthroughdevice $VMName $GPUID $destHost
+
         Start-Sleep -s 1
 
         $g=get-view -viewtype VirtualMachine -filter @{"Name"=$VMName}
         $h=$g.config.hardware.device | ?{$_.Backing -like "*Pass*"}
         $h.backing
+
         $gpuvm = Get-VM $newvm
         $device = Get-PassthroughDevice -VM $gpuvm -Type Pci
         $devname = $device.Name
+
         $devid = $h.backing.Id
+
+
         "-----------------------------------------------------"
         Write-Host -ForeGroundColor Green "[INFO] PCI Device '$devname' with ID: ' $devid ' has been added to the VM '$newvm'"
         $outputBox.AppendText("[INFO] PCI Device '$devname' with ID: ' $devid ' has been added to the VM '$newvm'`r`n")
@@ -2051,7 +2057,9 @@ function main {
         LogWrite "[INFO] $time- PCI Device '$devname' with ID: ' $devid ' has been added to the VM '$newvm'`n`n"
         "-----------------------------------------------------"
         #foreach ($vm in (get-vm $newvm)) {get-vmresourceconfiguration $vm | set-vmresourceconfiguration -MemReservationMB $vm.MemoryMB}
+
         #Start-Sleep -s 3
+
         # Start the VM
 	    Start-VM $VMName
 
@@ -2059,7 +2067,13 @@ function main {
         LogWrite "[INFO] $time- PCI Device Added to VM $VMName`n"
         LogWrite "#################################################################################`n"
       }
-      ##########################################################################################################################################################################################
+
+
+
+
+
+
+
 
        "(8). Install Horizon Agent"
        {
@@ -2169,7 +2183,6 @@ function main {
 
         [Console]::ResetColor()
        }
-       ##########################################################################################################################################################################################
        "(9). Add Network Card"
       {
         # Adding Network adapter to the VM
@@ -2181,7 +2194,7 @@ function main {
         $time = date -Format hh:mm:ss.ms
         LogWrite "[INFO] $time- Adding VM $VMName Network adpater.`n"
         New-NetworkAdapter -VM $newvm -Type Vmxnet3 -NetworkName "VLAN 513 - Training LAN (blade)" -WakeOnLan:$true -StartConnected:$true -Confirm:$false
-        Start-sleep -s 2
+        #Start-sleep -s 1
         Start-VM $VMName
         $outputBox.AppendText("[INFO] VM $VMNames Network Card added.`r`n")
         Write-Host -ForeGroundColor Green "[INFO] VM $VMNames Network Card added."
@@ -2191,7 +2204,6 @@ function main {
         LogWrite "[INFO] $time- Network adpater added. Moving to next VM`n"
         LogWrite "#################################################################################`n"
       }
-      ##########################################################################################################################################################################################
        "(10). Connect Network Card"
       {
         # Connect VM network card
@@ -2210,7 +2222,6 @@ function main {
         LogWrite "#################################################################################`n"
 
       }
-      ##########################################################################################################################################################################################
        "(11). Get VM IP Address"
        {
         $VMfile = $Org_VMName
@@ -2238,8 +2249,9 @@ function main {
         LogWrite "#################################################################################`n"
         $operationloop = $i           # Break the loop
         #break
+
        }
-       ##########################################################################################################################################################################################
+
        "(12). Set Linux VM Hostname"
        {
         # Set VMs Hostnames
@@ -2258,10 +2270,12 @@ function main {
         $time = date -Format hh:mm:ss.ms
         LogWrite "[INFO] $time- Hostname update on VM  $VMName`n"
         LogWrite "#################################################################################`n"
+
        }
-       ##########################################################################################################################################################################################
+
        "(13). Install Nvidia Driver on Linux VM"
        {
+
         #Install the Nvidia Driver
         $outputBox.AppendText("[INFO] Installing Nvidia Driver into VM $VMNames...`r`n")
         Write-Host -ForeGroundColor Green "[INFO] Installing Nvidia Driver into VM $VMNames..."
@@ -2272,7 +2286,9 @@ function main {
         Write-Host -ForeGroundColor Yelllow "[DEBUG] VM $VMNames is about to restart to apply Nvidia driver changes."
         $outputBox.AppendText("#################################################################################`r`n`r`n")
         Write-Host -ForeGroundColor Green "#################################################################################`n"
+
       }
+
 #########################################################################################################################################################################################
 #########################################################################################################################################################################################
 #########################################################################################################################################################################################
@@ -2560,14 +2576,17 @@ function main {
 ############################################################################################################################################################################################
 ############################################################################################################################################################################################
 ############################################################################################################################################################################################
+
         "(15). Clone VMs for an Inactive pool"
        {
+
         $VMName = $destVMName
 
         write-host -ForeGroundColor Yellow "`n############ Clone Nbr: $j   On: $VMName      ##########`n"
         $outputBox.AppendText("`r`n############ Clone Nbr: $j   On: $VMName     ##########`r`n")
         $time = date -Format dd/MM/yy`thh:mm:ss.m
         LogWrite "[INFO] $time- Cloning the VM: $VMName started.`n"
+
 
 	    if (IsVMExists ($destVMName))
 	    {
@@ -2591,6 +2610,7 @@ function main {
                 continue
 		    }
 	    }
+
         $GPUID = $null
         $destHost = $null
 
@@ -2653,7 +2673,7 @@ function main {
             Write-Host -ForeGroundColor Red "#################################################################################`n"
             $outputBox.AppendText("#################################################################################`r`n`r`n")
 
-            Start-sleep -s 2
+            #Start-sleep -s 2
             $operationloop = $lastgoodi
             continue
             #break
@@ -2737,7 +2757,7 @@ function main {
 
         add-uniquepcipassthroughdevice $newvm $GPUID $destHost
 
-        Start-Sleep -s 5
+        Start-Sleep -s 1
 
         $g=get-view -viewtype VirtualMachine -filter @{"Name"=$destVMName}
         $h=$g.config.hardware.device | ?{$_.Backing -like "*Pass*"}
@@ -2771,7 +2791,6 @@ function main {
 
         [Console]::ResetColor()
        }
-       ##########################################################################################################################################################################################
         "(16) Remove GPU from VM"
        {
         # Remove PCI device GPU
@@ -2792,8 +2811,8 @@ function main {
         LogWrite "#################################################################################`n"
 
        }
-       ##########################################################################################################################################################################################
-        "(17). Run a Linux Command"
+
+        "(17). Change network VLAN configuration"
        {
         #Configure VLAN setting
         $outputBox.AppendText("[INFO] Configuring Network card with New VLAN on VM $VMNames...`r`n")
