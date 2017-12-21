@@ -39,7 +39,7 @@ The script also supports other operations we found very useful when running VMwa
 
 16) Remove GPU from VM
 
-17) Run a Linux Command (Still under construction, Or it is available for something else. VMs are easier and better managed using Ansible)
+17) Change VLAN confgiruation (Still under construction, Or it is available for something else. VMs are easier and better managed using Ansible)
 
 #Usage
 
